@@ -29,6 +29,7 @@ for(c in 1:16){
 Mcols = c(1, 5, 9, 13)
 labs  = c("co1", "cytb", "mt", "genome")
 l = 0
+pdf("div_classcompare.pdf", height=4, width=4, onefile=T)
 for(c in Mcols){
   l = l + 1
   plot(-100,-100, xlim=c(1.65,4.40), ylim=c(0,0.15), xlab="Class", ylab="divergence rate (Kimura 1980)", axes=T, main=labs[l])
@@ -42,6 +43,32 @@ for(c in Mcols){
     segments(x0=r-o, y0=(class.sum[r,c]+class.sum[r,(c+3)]), x1=r+o, y1=(class.sum[r,c]+class.sum[r,(c+3)]), lwd=2) #top
   }
 }
+dev.off()
+
+#by class with raw/density data
+Mcols = c(10, 16, 22, 34)
+labs    = c("co1", "cytb", "mt", "genome")
+colors6 = c("saddlebrown", "goldenrod3", "dodgerblue3",    "firebrick3", "chartreuse3",    "darkorchid3")
+classes = c("Reptilia",    "Aves",       "Actinopterygii", "Mammalia",   "Chondrichthyes", "Amphibia")
+l = 0
+for(c in Mcols){
+  l = l + 1
+  t = data[!is.na(data[,Mcols]),]
+  t = t[!is.na(t[,1]),]
+  plot(-100,-100, xlim=c(0.65,6.40), ylim=c(0,0.3), xlab="Class", ylab="divergence rate (Kimura 1980)", axes=T, main=labs[l])
+  b = 0.35
+  o = 0.05
+  j = 0.05
+  c6 = 0
+  for(g in classes){
+    c6 = c6 + 1
+    tt = t[t$class==as.character(g),,drop=F]
+    tt = tt[!is.na(tt[,Mcols]),,drop=F]
+    points(x=(c6-sample(seq(j, 0.2, 0.01), nrow(tt), replace=T)), y=tt[,c], col=alpha(colors6[c6], 0.7), pch=19, cex=0.75)
+    vioplot(x=tt[,c], col = alpha(colors6[c6], 0.9), plotCentre = "line", side = "right", ylim=c(0,0.3), add=T, at=(c6+j))
+  }
+}
+
 
 #individuals
 Mcols = c(10, 16, 22, 34)
