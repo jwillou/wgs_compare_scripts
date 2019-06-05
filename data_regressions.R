@@ -156,7 +156,7 @@ as.phylo.formula2 = function (x, data = parent.frame(), ...){
   return(phy)
 }
 atree  = as.phylo.formula2(~class/order/family, data=pdata)
-pdf("family_tree.pdf", height=12, width=3)
+pdf("family_tree.pdf", height=10, width=5)
 par(bg=NA)
 plot(atree, cex=0.75)
 dev.off()
@@ -173,9 +173,9 @@ for(f in famorder){
 
 Mcols   = 34
 #set up plot
-pdf("family_divergence.pdf", height=7, width=8)
+pdf("family_divergence.pdf", height=10, width=8)
 par(bg=NA)
-plot(-100,-100, xlim=c(1,61), ylim=c(-0.10,0.155), xlab="Family", ylab="divergence rate (Kimura 1980)", axes=F)
+plot(-100,-100, xlim=c(1,60), ylim=c(-0.10,0.155), xlab="Family", ylab="divergence rate (Kimura 1980)", axes=F)
 axis(side=1, at=seq(1,60,1), pos=-0.005, labels=F, lwd=0.75)
 segments(x0=0, x1=61,y0=-0.005, y1=-0.005, lwd=1)
 axis(side=2, at=seq(0,0.15,0.05), pos=0, labels=T, lwd=0.75)
@@ -204,11 +204,11 @@ for(f in famorder){
 dev.off()
 
 #summarize by class with half violin plots
-pdf("family_violin.pdf", height=5, width=3)
+pdf("family_violin.pdf", height=8, width=3)
 par(bg=NA)
-plot(-100, -100, xlim=c(0.5, 1.5), ylim=c(-0.10,0.155), axes=T)
+plot(-100, -100, xlim=c(0.5, 1.5), ylim=c(0,0.15), axes=T)
 tt = data[data$class=="Reptilia",,drop=F]
-vioplot(x=tt[,Mcols], col = alpha("saddlebrown", 0.9), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1)
+vioplot(x=tt[,Mcols], col = alpha("saddlebrown", 0.8), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1)
 tt = data[data$class=="Actinopterygii",,drop=F]
 vioplot(x=tt[,Mcols], col = alpha("dodgerblue3", 0.3), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1)
 tt = data[data$class=="Mammalia",,drop=F]
