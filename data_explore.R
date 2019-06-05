@@ -1,4 +1,4 @@
-setwd("/Users/jannawilloughby/GDrive/WGS_divergence/data/")
+setwd("/Users/jannawilloughby/GDrive/WGS_divergence/data/explore/")
 library(scales)
 
 #read in data
