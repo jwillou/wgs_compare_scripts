@@ -171,17 +171,18 @@ for(f in famorder){
   colorder = c(colorder, as.character(classcol$color[classcol$class==as.character(t)]))
 }
 
+#genomic divergence
 Mcols   = 34
 #set up plot
-pdf("family_divergence.pdf", height=10, width=8)
+pdf("family_divergence_g.pdf", height=6, width=8)
 par(bg=NA)
-plot(-100,-100, xlim=c(1,60), ylim=c(-0.10,0.155), xlab="Family", ylab="divergence rate (Kimura 1980)", axes=F)
-axis(side=1, at=seq(1,60,1), pos=-0.005, labels=F, lwd=0.75)
-segments(x0=0, x1=61,y0=-0.005, y1=-0.005, lwd=1)
+plot(-100,-100, xlim=c(1,59), ylim=c(-0.10,0.155), xlab="Family", ylab="divergence rate (Kimura 1980)", axes=F)
+axis(side=1, at=seq(1,59,1), pos=-0.005, labels=F, lwd=0.75)
+segments(x0=0, x1=60,y0=-0.005, y1=-0.005, lwd=1)
 axis(side=2, at=seq(0,0.15,0.05), pos=0, labels=T, lwd=0.75)
 segments(x0=0, x1=0,y0=-0.005, y1=0.155, lwd=1)
-segments(x0=0, x1=61,y0=0.155, y1=0.155, lwd=1)
-segments(x0=61, x1=61,y0=0.155, y1=-0.005, lwd=1)
+segments(x0=0, x1=60,y0=0.155, y1=0.155, lwd=1)
+segments(x0=60, x1=60,y0=0.155, y1=-0.005, lwd=1)
 
 #add polygon shading
 for(i in seq(1, 60, 2)){
@@ -204,17 +205,64 @@ for(f in famorder){
 dev.off()
 
 #summarize by class with half violin plots
-pdf("family_violin.pdf", height=8, width=3)
+pdf("family_violin_g.pdf", height=8, width=3)
 par(bg=NA)
-plot(-100, -100, xlim=c(0.5, 1.5), ylim=c(0,0.15), axes=T)
-tt = data[data$class=="Reptilia",,drop=F]
-vioplot(x=tt[,Mcols], col = alpha("saddlebrown", 0.8), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1)
-tt = data[data$class=="Actinopterygii",,drop=F]
-vioplot(x=tt[,Mcols], col = alpha("dodgerblue3", 0.3), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1)
+plot(-100, -100, xlim=c(0.5, 2.5), ylim=c(0,0.15), axes=T)
 tt = data[data$class=="Mammalia",,drop=F]
-vioplot(x=tt[,Mcols], col = alpha("firebrick3", 0.3), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1)
+vioplot(x=tt[,Mcols], col = alpha("firebrick3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=0.5)
+tt = data[data$class=="Reptilia",,drop=F]
+vioplot(x=tt[,Mcols], col = alpha("saddlebrown", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1)
+tt = data[data$class=="Actinopterygii",,drop=F]
+vioplot(x=tt[,Mcols], col = alpha("dodgerblue3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1.5)
 tt = data[data$class=="Aves",,drop=F]
-vioplot(x=tt[,Mcols], col = alpha("goldenrod3", 0.5), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1)
+vioplot(x=tt[,Mcols], col = alpha("goldenrod3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=2)
+dev.off()
+
+#mtdna divergence
+Mcols   = 22
+#set up plot
+pdf("family_divergence_m.pdf", height=5, width=8)
+par(bg=NA)
+plot(-100,-100, xlim=c(1,59), ylim=c(-0.10,0.33), xlab="Family", ylab="divergence rate (Kimura 1980)", axes=F)
+axis(side=1, at=seq(1,59,1), pos=-0.005, labels=F, lwd=0.75)
+segments(x0=0, x1=60,y0=-0.005, y1=-0.005, lwd=1)
+axis(side=2, at=seq(0,0.3,0.05), pos=0, labels=T, lwd=0.75)
+segments(x0=0, x1=0,y0=-0.005, y1=0.33, lwd=1)
+segments(x0=0, x1=60,y0=0.33, y1=0.33, lwd=1)
+segments(x0=60, x1=60,y0=0.33, y1=-0.005, lwd=1)
+
+#add polygon shading
+for(i in seq(1, 60, 2)){
+  polygon(x=c((i-0.5), (i+0.5), (i+0.5), (i-0.5)), y=c(-0.10,-0.10,0.33,0.33), col=alpha("grey50", 0.25), border=F)
+}
+
+#plot data by family/class
+ci = 0
+b = 0.35
+o = 0.05
+j = 0.005
+c6 = 0
+for(f in famorder){
+  ci = ci + 1
+  c6 = c6 + 1
+  tt = data[data$family==as.character(f),,drop=F]
+  tt = tt[!is.na(tt[,Mcols]),,drop=F]
+  points(x=(c6-sample(seq(j, 0.2, 0.01), nrow(tt), replace=T)), y=tt[,Mcols], col=alpha(colorder[ci], 1), pch=19, cex=0.75) #
+}
+dev.off()
+
+#summarize by class with half violin plots
+pdf("family_violin_m.pdf", height=8, width=3)
+par(bg=NA)
+plot(-100, -100, xlim=c(0.5, 2.5), ylim=c(0,0.3), axes=T)
+tt = data[data$class=="Mammalia",,drop=F]
+vioplot(x=tt[,Mcols], col = alpha("firebrick3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=0.5)
+tt = data[data$class=="Reptilia",,drop=F]
+vioplot(x=tt[,Mcols], col = alpha("saddlebrown", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1)
+tt = data[data$class=="Actinopterygii",,drop=F]
+vioplot(x=tt[,Mcols], col = alpha("dodgerblue3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1.5)
+tt = data[data$class=="Aves",,drop=F]
+vioplot(x=tt[,Mcols], col = alpha("goldenrod3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=2)
 dev.off()
 
 ####biospp concept####
