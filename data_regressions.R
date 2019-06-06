@@ -7,7 +7,7 @@ library(phytools)
 data = read.table("data_may23.csv", header=T, sep=",")
 
 ####class####
-pdf("classcompare.pdf", height=5, width=5, onefile=T)
+pdf("class/classcompare.pdf", height=5, width=5, onefile=T)
 classes = unique(data$class)
 OUT = NULL
 for(c in 1:length(classes)){
@@ -45,7 +45,7 @@ for(c in Mcols){
     segments(x0=r-o, y0=(class.sum[r,c]+class.sum[r,(c+3)]), x1=r+o, y1=(class.sum[r,c]+class.sum[r,(c+3)]), lwd=2) #top
   }
 }
-write.table(class.sum, "classcompare.csv", sep=",", row.names=F, col.names=T)
+write.table(class.sum, "class/classcompare.csv", sep=",", row.names=F, col.names=T)
 
 #by class with raw/density data
 Mcols = c(10, 16, 22, 34)
@@ -266,16 +266,15 @@ vioplot(x=tt[,Mcols], col = alpha("goldenrod3", 1), plotCentre = "line", side = 
 dev.off()
 
 ####biospp concept####
-pdf("biospp.pdf", height=5, width=5, onefile=T)
-sink("biospp_lm.txt")
+pdf("range/biospp.pdf", height=5, width=5, onefile=T)
+sink("range/biospp_lm.txt")
 #how does species range location/overlap influence divergence
-colors6 = c("saddlebrown", "goldenrod3", "dodgerblue3",    "firebrick3", "chartreuse3",    "darkorchid3") #
+colors6 = c("saddlebrown", "goldenrod3", "dodgerblue2",    "firebrick2", "chartreuse3",    "darkorchid3") #
 classes = c("Reptilia",    "Aves",       "Actinopterygii", "Mammalia",   "Chondrichthyes", "Amphibia") #    
 
 #1. does a larger range overlap mean that species are less diverged? - NO
 data$perrange = (data$gArea_Int / (data$gArea_sp1 + data$gArea_sp2))
-plot(-100,-100, xlim=c(0,0.4), ylim=c(0,0.15), xlab="prop. range overlap", ylab="divergence rate (Kimura 1980)")
-
+plot(-100,-100, xlim=c(0,0.35), ylim=c(0,0.15), xlab="prop. range overlap", ylab="nuclear divergence rate")
 #add regression line
 x0 = 0
 x1 = max(data$perrange, na.rm=T)
@@ -286,24 +285,28 @@ for(c in 1:length(classes)){
   t = data[data$class==as.character(classes[c]),,drop=F]
   t$perrange[t$perrange==0] = NA
   t = t[!is.na(t$perrange),,drop=FALSE]
-  # #add regression lines
-  # if(nrow(t)>9){
-  #   x0 = 0
-  #   x1 = max(data$perrange[data$class==as.character(classes[c])], na.rm=T)
-  #   y0 = (coef(lm(genS_K80~perrange, data=t))[2]*x0)+coef(lm(genS_K80~perrange, data=t))[1]
-  #   y1 = (coef(lm(genS_K80~perrange, data=t))[2]*x1)+coef(lm(genS_K80~perrange, data=t))[1]
-  #   segments(x0=x0, x1=x1, y1=y1, y0=y0, lty=1, col=colors6[c], lwd=3)
-  # }
   points(t$perrange, t$genS_K80, col=alpha(colors6[c], 0.5), pch=19, cex=1)
 }
 print(summary(glm(genS_K80~perrange, data=data[data$perrange>0,])))
-print(summary(lm(genS_K80~perrange, data=data[data$class=="Mammalia",])))
-print(summary(lm(genS_K80~perrange, data=data[data$class=="Aves",])))
 
-#2. if speices ranges are farther apart, estimated by the shortest distance between range edges, are they more diverged? - NO
+plot(-100,-100, xlim=c(0,0.35), ylim=c(0,0.3), xlab="prop. range overlap", ylab="mitochondrial divergence rate")
+#add regression line
+x0 = 0
+x1 = max(data$perrange, na.rm=T)
+y0 = (coef(lm(mtW_K80~perrange, data=data[data$perrange>0,]))[2]*x0)+coef(lm(mtW_K80~perrange, data=data[data$perrange>0,]))[1]
+y1 = (coef(lm(mtW_K80~perrange, data=data[data$perrange>0,]))[2]*x1)+coef(lm(mtW_K80~perrange, data=data[data$perrange>0,]))[1]
+segments(x0=x0, x1=x1, y1=y1, y0=y0, lty=1, col="grey20", lwd=3)
+for(c in 1:length(classes)){
+  t = data[data$class==as.character(classes[c]),,drop=F]
+  t$perrange[t$perrange==0] = NA
+  t = t[!is.na(t$perrange),,drop=FALSE]
+  points(t$perrange, t$mtW_K80, col=alpha(colors6[c], 0.5), pch=19, cex=1)
+}
+print(summary(glm(mtW_K80~perrange, data=data[data$perrange>0,])))
+
+#2. if speices ranges are farther apart, estimated by the shortest distance between range edges, are they more diverged? - NO nuc, YES mt
 data$rdist_km = data$gDist/1000
 plot(-100,-100, xlim=c(0,13000), ylim=c(0,0.15), xlab="smallest distance between range edges (km)", ylab="divergence rate (Kimura 1980)")
-
 #add regression line
 x0 = 0
 x1 = max(data$rdist_km, na.rm=T)
@@ -314,19 +317,24 @@ for(c in 1:length(classes)){
   t = data[data$class==as.character(classes[c]),,drop=F]
   t$rdist_km[t$rdist_km==0] = NA
   t = t[!is.na(t$rdist_km),,drop=FALSE]
-  #add regression lines
-  # if(nrow(t)>9){
-  #   x0 = 0
-  #   x1 = max(data$rdist_km[data$class==as.character(classes[c])], na.rm=T)
-  #   y0 = (coef(lm(genS_K80~rdist_km, data=t))[2]*x0)+coef(lm(genS_K80~rdist_km, data=t))[1]
-  #   y1 = (coef(lm(genS_K80~rdist_km, data=t))[2]*x1)+coef(lm(genS_K80~rdist_km, data=t))[1]
-  #   segments(x0=x0, x1=x1, y1=y1, y0=y0, lty=1, col=colors6[c], lwd=3)
-  # }
   points(t$rdist_km, t$genS_K80, col=alpha(colors6[c], 0.5), pch=19, cex=1)
 }
-print(summary(glm(genS_K80~rdist_km, data=data)))
-print(summary(glm(genS_K80~rdist_km, data=data[data$class=="Mammalia",])))
-print(summary(glm(genS_K80~rdist_km, data=data[data$class=="Aves",])))
+print(summary(lm(genS_K80~rdist_km, data=data)))
+
+plot(-100,-100, xlim=c(0,13000), ylim=c(0,0.3), xlab="smallest distance between range edges (km)", ylab="mitochondrial divergence rate")
+#add regression line
+x0 = 0
+x1 = max(data$rdist_km, na.rm=T)
+y0 = (coef(lm(mtW_K80~rdist_km, data=data[data$rdist_km>0,]))[2]*x0)+coef(lm(mtW_K80~rdist_km, data=data[data$rdist_km>0,]))[1]
+y1 = (coef(lm(mtW_K80~rdist_km, data=data[data$rdist_km>0,]))[2]*x1)+coef(lm(mtW_K80~rdist_km, data=data[data$rdist_km>0,]))[1]
+segments(x0=x0, x1=x1, y1=y1, y0=y0, lty=1, col="grey20", lwd=3)
+for(c in 1:length(classes)){
+  t = data[data$class==as.character(classes[c]),,drop=F]
+  t$rdist_km[t$rdist_km==0] = NA
+  t = t[!is.na(t$rdist_km),,drop=FALSE]
+  points(t$rdist_km, t$mtW_K80, col=alpha(colors6[c], 0.5), pch=19, cex=1)
+}
+print(summary(lm(mtW_K80~rdist_km, data=data)))
 
 #3a. when species ranges overlap more/less, are hybrids more/less likely? -NO
 data$hyb = rep(0, nrow(data))

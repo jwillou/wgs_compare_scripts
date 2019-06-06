@@ -2,7 +2,7 @@ setwd("/Users/jannawilloughby/GDrive/WGS_divergence/data/explore/")
 library(scales)
 
 #read in data
-data = read.table("data_may23.csv", header=T, sep=",")
+data = read.table("../data_may23.csv", header=T, sep=",")
 
 #how correlated are various estimates within the same region comparisons?
 write.table(c("correlation between divergence estimates"), "div_corr.txt", sep="\t", row.names=F, col.names=F, append=F, quote=F)
@@ -25,6 +25,42 @@ for(g in 1:length(lowcol)){
   write.table(tempcor, "div_corr.txt", sep="\t", row.names=T, col.names=T, append=T, quote=F)
   write.table(" ", "div_corr.txt", sep="\t", row.names=F, col.names=F, append=T, quote=F)
 }
+
+#nice figure for mt vs. genomic
+colors6 = c("saddlebrown", "goldenrod3", "dodgerblue2",    "firebrick2", "chartreuse3",    "darkorchid3") #
+classes = c("Reptilia",    "Aves",       "Actinopterygii", "Mammalia",   "Chondrichthyes", "Amphibia") #    
+
+pdf("../nuc_mt_div.pdf", height=5, width=5)
+plot(-100, -100, ylim=c(-0.005,0.180), xlim=c(0,0.37), xlab="mitochondrial divergence rate", ylab="nuclear divergence rate", axes=F)
+segments(x0=-0.005, x1=0.33, y0=-0.005, y1=-0.005)
+segments(x0=-0.005, x1=-0.005, y0=-0.005, y1=0.16)
+segments(x0=-0.005, x1=0.33, y0=0.16, y1=0.16)
+segments(x0= 0.33,  x1=0.33, y0=-0.005, y1=0.16)
+axis(side=2, labels=T, tick=T, pos=-0.005, at=seq(0,0.15,0.05))
+axis(side=1, labels=T, tick=T, pos=-0.005, at=seq(0,0.30,0.1))
+segments(x0=0, x1=0.15, y0=0, y1=0.15, col="grey50", lty=2)
+lmr = lm(gen_K80~mtW_K80, data=data) #regression
+x0 = min(data$mtW_K80, na.rm=T)
+x1 = max(data$mtW_K80, na.rm=T)
+y0 = (coef(lmr)[2]*x0)+coef(lmr)[1]
+y1 = (coef(lmr)[2]*x1)+coef(lmr)[1]
+segments(x0=x0, x1=x1, y1=y1, y0=y0, lty=1, col="grey20", lwd=3)
+
+ci = 0
+for(c in classes){
+  ci = ci + 1
+  t = data[data$class==as.character(c),,drop=F]
+  points(y=t$gen_K80, x=t$mtW_K80, pch=19, col=alpha(colors6[ci], 0.5))
+  print(mean(c(t$gen_K80/t$mtW_K80), na.rm=T))
+  print(length(t$mtW_K80[!is.na(t$mtW_K80)]))
+  print(length(t$gen_K80[!is.na(t$gen_K80)]))
+}
+dev.off()
+summary(lmr)
+
+#%diff
+mean(c(data$gen_K80/data$mtW_K80), na.rm=T)
+
 
 #does blasting change estimates very much?
 pdf("div_blasteffect.pdf", height=4, width=4, onefile=T)
