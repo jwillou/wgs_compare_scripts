@@ -107,8 +107,12 @@ sink()
 
 ####classes
 for(c in c("Mammalia", "Aves")){
-  t = data[!is.na(data$rdist_km),]
+  t = data[data$class==c,]
+  print(c)
+  print(summary(lm(genS_K80~log(rdist_km+1), data=t)))
 }
+
+
 plot(-100,-100, xlim=c(0,13000), ylim=c(0,0.15), xlab="smallest distance between range edges (km)", ylab="divergence rate (Kimura 1980)")
 #add regression line
 x0 = 0
