@@ -4,36 +4,85 @@ library(vioplot)
 library(phytools)
 
 #read in data
-data = read.table("../data_june19.csv", header=T, sep=",")
+data = read.table("../data_july02.csv", header=T, sep=",")
 
 ####genome size####
 data$meanc = apply(cbind(data$sp1_cvalue, data$sp2_cvalue), 1, mean, na.rm=T)
-colors  = c("firebrick2", "dodgerblue2") #
-classes = c("Mammalia",   "Actinopterygii") #  
+for(r in 1:nrow(data)){
+  if(is.na(data$meanc[r])){
+    if(!is.na(data$sp1_cvalue[r])){
+      data$meanc[r] = data$sp1_cvalue[r]
+      next
+    }
+    if(!is.na(data$sp2_cvalue[r])){
+      data$meanc[r] = data$sp2_cvalue[r]
+      next
+    }
+  }
+}
+
+
+colors  = c("firebrick2", "dodgerblue2",     "goldenrod3") #
+classes = c("Mammalia",   "Actinopterygii",  "Aves") #  
+
 sink(file="genomesize_genomic.txt")
-print(summary(lm(gen_K80~meanc, data=data[data$class=="Mammalia",])))
-print(summary(lm(gen_K80~meanc, data=data[data$class=="Actinopterygii" & data$gen_K80 < 0.08,])))
-sink()
-pdf("genomesize_genomic.pdf", height=5.25, width=5)
-plot(-100, -100, xlim=c(-0.1, 5.3), ylim=c(-0.01, 0.17),xlab=NA, ylab="nuclear divergence rate", axes=F)
+pdf("genomesize_genomic_blk.pdf", height=5.25, width=5)
+
+plot(-100, -100, xlim=c(-0.1, 5.3), ylim=c(-0.01, 0.12),xlab=NA, ylab="nuclear divergence rate", axes=F)
 axis(side=1, at=seq(0,5,1), labels=T, tick=T, pos=-0.01)
-axis(side=2, at=seq(0,0.15,0.05), labels=T, tick=T, pos=-0.1)
+axis(side=2, at=seq(0,0.1,0.05), labels=T, tick=T, pos=-0.1)
 segments(x0=-0.1, x1=5.2,  y0=-0.01, y1=-0.01)
-segments(x0=-0.1, x1=-0.1, y0=-0.01, y1=0.16)
-segments(x0=-0.1, x1=5.2,  y0=0.16, y1=0.16)
-segments(x0=5.2,  x1=5.2,  y0=-0.01, y1=0.16)
-tlm = lm(gen_K80~meanc, data=data[data$class=="Mammalia",])
-x0=min(data$meanc[data$class=="Mammalia"], na.rm=T)
-x1=max(data$meanc[data$class=="Mammalia"], na.rm=T)
-y0=(tlm$coefficients[2]*min(data$meanc[data$class=="Mammalia"], na.rm=T)) + tlm$coefficients[1]
-y1=(tlm$coefficients[2]*max(data$meanc[data$class=="Mammalia"], na.rm=T)) + tlm$coefficients[1]
-segments(x0=x0, x1=x1, y0=y0, y1=y1, col=colors[1], lwd=1.5)
-points(x=data$meanc[data$class=="Mammalia"], y=data$gen_K80[data$class=="Mammalia"], col=alpha(colors[1], 0.8), pch=19)
-tlm = lm(gen_K80~meanc, data=data[data$class=="Actinopterygii" & data$gen_K80 < 0.08,])
-x0=min(data$meanc[data$class=="Actinopterygii" & data$gen_K80 < 0.08], na.rm=T)
-x1=max(data$meanc[data$class=="Actinopterygii" & data$gen_K80 < 0.08], na.rm=T)
-y0=(tlm$coefficients[2]*min(data$meanc[data$class=="Actinopterygii" & data$gen_K80 < 0.08], na.rm=T)) + tlm$coefficients[1]
-y1=(tlm$coefficients[2]*max(data$meanc[data$class=="Actinopterygii" & data$gen_K80 < 0.08], na.rm=T)) + tlm$coefficients[1]
-segments(x0=x0, x1=x1, y0=y0, y1=y1, col=colors[2], lwd=3)
-points(x=data$meanc[data$class=="Actinopterygii" & data$gen_K80 < 0.08], y=data$gen_K80[data$class=="Actinopterygii" & data$gen_K80 < 0.08], col=alpha(colors[2], 0.8), pch=19)
+segments(x0=-0.1, x1=-0.1, y0=-0.01, y1=0.11)
+segments(x0=-0.1, x1=5.2,  y0=0.11, y1=0.11)
+segments(x0=5.2,  x1=5.2,  y0=-0.01, y1=0.11)
+
+#mammal
+i = 1
+t = data[data$class==classes[i],]
+t = t[t$gen_K80 > 0,]
+t = data.frame(gen_K80=log(t$gen_K80), meanc=t$meanc)
+t = t[complete.cases(t),]
+tlm = lm(gen_K80~meanc, data=t)
+print(classes[i])
+print(summary(tlm))
+plotcurve = data.frame(x=t$meanc, y=predict(tlm))
+plotcurve$y = exp(plotcurve$y)
+plotcurve = plotcurve[order(plotcurve$x),]
+#lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
+lines(plotcurve$x, plotcurve$y, lwd=3, col="black")
+points(x=t$meanc, y=exp(t$gen_K80), col=alpha(colors[i], 0.6), pch=16, cex=1)
+
+#fish
+i = 2
+t = data[data$class==classes[i],]
+t = t[t$gen_K80 < 0.08,]
+t = data.frame(gen_K80=log(t$gen_K80), meanc=t$meanc)
+t = t[complete.cases(t),]
+tlm = lm(gen_K80~meanc, data=t)
+print(classes[i])
+print(summary(tlm))
+plotcurve = data.frame(x=t$meanc, y=predict(tlm))
+plotcurve$y = exp(plotcurve$y)
+plotcurve = plotcurve[order(plotcurve$x),]
+lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
+#lines(plotcurve$x, plotcurve$y, lwd=3, col="black")
+points(x=t$meanc, y=exp(t$gen_K80), col=alpha(colors[i], 0.6), pch=16, cex=1)
+
+#bird
+i = 3
+t = data[data$class==classes[i],]
+t = t[t$gen_K80 < 0.025,]
+t = data.frame(gen_K80=log(t$gen_K80), meanc=t$meanc)
+t = t[complete.cases(t),]
+tlm = lm(gen_K80~meanc, data=t)
+print(classes[i])
+print(summary(tlm))
+plotcurve = data.frame(x=t$meanc, y=predict(tlm))
+plotcurve$y = exp(plotcurve$y)
+plotcurve = plotcurve[order(plotcurve$x),]
+lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
+#lines(plotcurve$x, plotcurve$y, lwd=3, col="black")
+points(x=t$meanc, y=exp(t$gen_K80), col=alpha(colors[i], 0.6), pch=16, cex=1)
+
+sink()
 dev.off()

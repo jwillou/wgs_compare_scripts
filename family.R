@@ -1,13 +1,13 @@
-setwd("/Users/jannawilloughby/GDrive/WGS_divergence/data/")
+setwd("/Users/jannawilloughby/GDrive/WGS_divergence/data/family/")
 library(scales)
 library(vioplot)
 library(phytools)
 
 #read in data
-data = read.table("data_may23.csv", header=T, sep=",")
+data = read.table("../data_july02.csv", header=T, sep=",")
 
 ####class####
-pdf("class/classcompare.pdf", height=5, width=5, onefile=T)
+pdf("family/classcompare.pdf", height=5, width=5, onefile=T)
 classes = unique(data$class)
 OUT = NULL
 for(c in 1:length(classes)){
@@ -34,7 +34,7 @@ l = 0
 
 for(c in Mcols){
   l = l + 1
-  plot(-100,-100, xlim=c(1.65,4.40), ylim=c(0,0.15), xlab="Class", ylab="divergence rate (Kimura 1980)", axes=T, main=labs[l])
+  plot(-100,-100, xlim=c(1.65,4.40), ylim=c(0,0.15), xlab="Class", ylab="divergence (Kimura 1980)", axes=T, main=labs[l])
   colors5 = c("saddlebrown", "goldenrod3", "dodgerblue3", "firebrick3", "darkorchid3")
   b = 0.35
   o = 0.1
@@ -48,7 +48,7 @@ for(c in Mcols){
 write.table(class.sum, "class/classcompare.csv", sep=",", row.names=F, col.names=T)
 
 #by class with raw/density data
-Mcols = c(10, 16, 22, 34)
+Mcols = c(12, 18, 24, 36)
 labs    = c("co1", "cytb", "mt", "genome")
 colors6 = c("goldenrod3", "dodgerblue3",    "firebrick3") #"saddlebrown", , "chartreuse3",    "darkorchid3"
 classes = c("Aves",       "Actinopterygii", "Mammalia") #"Reptilia",    ,   "Chondrichthyes", "Amphibia"
@@ -75,32 +75,34 @@ for(c in Mcols){
     vioplot(x=tt[,c], col = alpha(colors6[c6], 0.9), plotCentre = "line", side = "right", ylim=c(0,0.3), add=T, at=(c6+j))
   }
 }
+#all classes combined
+l = 0
+for(c in Mcols){
+  l = l + 1
+  t = data[!is.na(data[,Mcols]),]
+  t = t[!is.na(t[,1]),]
+  if(labs[l]=="genome"){
+    plot(-100,-100, xlim=c(0.65,(length(classes)+0.4)), ylim=c(0,0.15), xlab="Class", ylab="divergence rate (Kimura 1980)", axes=T, main=labs[l])
+  }else{
+    plot(-100,-100, xlim=c(0.65,(length(classes)+0.4)), ylim=c(0,0.3), xlab="Class", ylab="divergence rate (Kimura 1980)", axes=T, main=labs[l])
+    
+  }
+  b = 0.35
+  o = 0.05
+  j = 0.05
+  c6 = 0
+  g  
+  c6 = c6 + 1
+  tt = t
+  tt = tt[!is.na(tt[,Mcols]),,drop=F]
+  points(x=(c6-sample(seq(j, 0.2, 0.01), nrow(tt), replace=T)), y=tt[,c], col=alpha("grey50", 0.7), pch=19, cex=0.75)
+  vioplot(x=tt[,c], col = alpha("grey50", 0.9), plotCentre = "line", side = "right", ylim=c(0,0.3), add=T, at=(c6+j))
+}
 dev.off()
 
 ####family####
 colors6 = c("saddlebrown", "goldenrod3", "dodgerblue3",    "firebrick3", "chartreuse3",    "darkorchid3") #
 classes = c("Reptilia",    "Aves",       "Actinopterygii", "Mammalia",   "Chondrichthyes", "Amphibia") #    
-Mcols   = 34
-ci = 0
-for(c in classes){
-  ci = ci + 1
-  tdata = data[data$class==as.character(c),,drop=F]
-  fams  = names(table(tdata$family)[table(tdata$family)>3])
-  if(length(fams)>0){
-    plot(-100,-100, xlim=c(0.65,(length(fams)+0.4)), ylim=c(0,0.15), xlab="Family", ylab="divergence rate (Kimura 1980)", axes=T, main=c)
-    b = 0.35
-    o = 0.05
-    j = 0.05
-    c6 = 0
-    for(f in 1:length(fams)){
-      c6 = c6 + 1
-      tt = tdata[tdata$family==as.character(fams[f]),,drop=F]
-      tt = tt[!is.na(tt[,Mcols]),,drop=F]
-      points(x=(c6-sample(seq(j, 0.2, 0.01), nrow(tt), replace=T)), y=tt[,Mcols], col=alpha(colors6[ci], 0.7), pch=19, cex=0.75)
-      vioplot(x=tt[,Mcols], col = alpha(colors6[ci], 0.9), plotCentre = "line", side = "right", ylim=c(0,0.3), add=T, at=(c6+j))
-    }
-  }
-}
 
 #create tree for next plot
 allfams = names(table(data$family))
@@ -172,17 +174,29 @@ for(f in famorder){
 }
 
 #genomic divergence
-Mcols   = 34
+Mcols   = 36 #(12, 18, 24, 36)
 #set up plot
 pdf("family_divergence_g.pdf", height=6, width=8)
 par(bg=NA)
-plot(-100,-100, xlim=c(1,59), ylim=c(-0.10,0.155), xlab="Family", ylab="divergence rate (Kimura 1980)", axes=F)
+plot(-100,-100, xlim=c(1,59), ylim=c(-0.10,0.155), xlab="Family", ylab="divergence (Kimura 1980)", axes=F)
 axis(side=1, at=seq(1,59,1), pos=-0.005, labels=F, lwd=0.75)
 segments(x0=0, x1=60,y0=-0.005, y1=-0.005, lwd=1)
 axis(side=2, at=seq(0,0.15,0.05), pos=0, labels=T, lwd=0.75)
 segments(x0=0, x1=0,y0=-0.005, y1=0.155, lwd=1)
 segments(x0=0, x1=60,y0=0.155, y1=0.155, lwd=1)
 segments(x0=60, x1=60,y0=0.155, y1=-0.005, lwd=1)
+
+#find cutoff value, add to plot
+all = mean(c(data[,Mcols]), na.rm=T) + sd(c(data[,Mcols]), na.rm=T)
+segments(x0=1,x1=59,y0=all,y1=all, lty=2, col="black", lwd=2)
+#mamm = mean(c(data[data$class=="Mammalia",Mcols]), na.rm=T) + sd(c(data[data$class=="Mammalia",Mcols]), na.rm=T)
+#segments(x0=3,x1=28,y0=mamm,y1=mamm, lty=1, col="firebrick3", lwd=2)
+#rept = mean(c(data[data$class=="Reptilia",Mcols]), na.rm=T) + sd(c(data[data$class=="Reptilia",Mcols]), na.rm=T)
+#segments(x0=29,x1=32,y0=rept,y1=rept, lty=1, col="saddlebrown", lwd=2)
+#fish = mean(c(data[data$class=="Actinopterygii",Mcols]), na.rm=T) + sd(c(data[data$class=="Actinopterygii",Mcols]), na.rm=T)
+#segments(x0=33,x1=47,y0=fish,y1=fish, lty=1, col="dodgerblue3", lwd=2)
+#bird = mean(c(data[data$class=="Aves",Mcols]), na.rm=T) + sd(c(data[data$class=="Aves",Mcols]), na.rm=T)
+#segments(x0=48,x1=59,y0=bird,y1=bird, lty=1, col="goldenrod3", lwd=2)
 
 #add polygon shading
 for(i in seq(1, 60, 2)){
@@ -207,7 +221,7 @@ dev.off()
 #summarize by class with half violin plots
 pdf("family_violin_g.pdf", height=8, width=3)
 par(bg=NA)
-plot(-100, -100, xlim=c(0.5, 2.5), ylim=c(0,0.15), axes=T)
+plot(-100, -100, xlim=c(0.5, 3), ylim=c(0,0.15), axes=T)
 tt = data[data$class=="Mammalia",,drop=F]
 vioplot(x=tt[,Mcols], col = alpha("firebrick3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=0.5)
 tt = data[data$class=="Reptilia",,drop=F]
@@ -216,10 +230,12 @@ tt = data[data$class=="Actinopterygii",,drop=F]
 vioplot(x=tt[,Mcols], col = alpha("dodgerblue3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1.5)
 tt = data[data$class=="Aves",,drop=F]
 vioplot(x=tt[,Mcols], col = alpha("goldenrod3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=2)
+tt = data
+vioplot(x=tt[,Mcols], col = alpha("grey50", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=2.5)
 dev.off()
 
 #mtdna divergence
-Mcols   = 22
+Mcols   = 24
 #set up plot
 pdf("family_divergence_m.pdf", height=5, width=8)
 par(bg=NA)
@@ -230,6 +246,10 @@ axis(side=2, at=seq(0,0.3,0.05), pos=0, labels=T, lwd=0.75)
 segments(x0=0, x1=0,y0=-0.005, y1=0.33, lwd=1)
 segments(x0=0, x1=60,y0=0.33, y1=0.33, lwd=1)
 segments(x0=60, x1=60,y0=0.33, y1=-0.005, lwd=1)
+
+#find cutoff value, add to plot
+all = mean(c(data[,Mcols]), na.rm=T) + sd(c(data[,Mcols]), na.rm=T)
+segments(x0=1,x1=59,y0=all,y1=all, lty=2, col="black", lwd=2)
 
 #add polygon shading
 for(i in seq(1, 60, 2)){
@@ -254,7 +274,7 @@ dev.off()
 #summarize by class with half violin plots
 pdf("family_violin_m.pdf", height=8, width=3)
 par(bg=NA)
-plot(-100, -100, xlim=c(0.5, 2.5), ylim=c(0,0.3), axes=T)
+plot(-100, -100, xlim=c(0.5, 3), ylim=c(0,0.3), axes=T)
 tt = data[data$class=="Mammalia",,drop=F]
 vioplot(x=tt[,Mcols], col = alpha("firebrick3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=0.5)
 tt = data[data$class=="Reptilia",,drop=F]
@@ -263,104 +283,114 @@ tt = data[data$class=="Actinopterygii",,drop=F]
 vioplot(x=tt[,Mcols], col = alpha("dodgerblue3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1.5)
 tt = data[data$class=="Aves",,drop=F]
 vioplot(x=tt[,Mcols], col = alpha("goldenrod3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=2)
+tt = data
+vioplot(x=tt[,Mcols], col = alpha("grey50", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=2.5)
 dev.off()
 
-####biospp concept####
-pdf("range/biospp.pdf", height=5, width=5, onefile=T)
-sink("range/biospp_lm.txt")
-#how does species range location/overlap influence divergence
-colors6 = c("saddlebrown", "goldenrod3", "dodgerblue2",    "firebrick2", "chartreuse3",    "darkorchid3") #
-classes = c("Reptilia",    "Aves",       "Actinopterygii", "Mammalia",   "Chondrichthyes", "Amphibia") #    
+#coi divergence
+Mcols   = 12
+#set up plot
+pdf("family_divergence_coi.pdf", height=5, width=8)
+par(bg=NA)
+plot(-100,-100, xlim=c(1,59), ylim=c(-0.10,0.33), xlab="Family", ylab="divergence rate (Kimura 1980)", axes=F)
+axis(side=1, at=seq(1,59,1), pos=-0.005, labels=F, lwd=0.75)
+segments(x0=0, x1=60,y0=-0.005, y1=-0.005, lwd=1)
+axis(side=2, at=seq(0,0.3,0.05), pos=0, labels=T, lwd=0.75)
+segments(x0=0, x1=0,y0=-0.005, y1=0.33, lwd=1)
+segments(x0=0, x1=60,y0=0.33, y1=0.33, lwd=1)
+segments(x0=60, x1=60,y0=0.33, y1=-0.005, lwd=1)
 
-#1. does a larger range overlap mean that species are less diverged? - NO
-data$perrange = (data$gArea_Int / (data$gArea_sp1 + data$gArea_sp2))
-plot(-100,-100, xlim=c(0,0.35), ylim=c(0,0.15), xlab="prop. range overlap", ylab="nuclear divergence rate")
-#add regression line
-x0 = 0
-x1 = max(data$perrange, na.rm=T)
-y0 = (coef(lm(genS_K80~perrange, data=data[data$perrange>0,]))[2]*x0)+coef(lm(genS_K80~perrange, data=data[data$perrange>0,]))[1]
-y1 = (coef(lm(genS_K80~perrange, data=data[data$perrange>0,]))[2]*x1)+coef(lm(genS_K80~perrange, data=data[data$perrange>0,]))[1]
-segments(x0=x0, x1=x1, y1=y1, y0=y0, lty=1, col="grey20", lwd=3)
-for(c in 1:length(classes)){
-  t = data[data$class==as.character(classes[c]),,drop=F]
-  t$perrange[t$perrange==0] = NA
-  t = t[!is.na(t$perrange),,drop=FALSE]
-  points(t$perrange, t$genS_K80, col=alpha(colors6[c], 0.5), pch=19, cex=1)
+#find cutoff value, add to plot
+all = mean(c(data[,Mcols]), na.rm=T) + sd(c(data[,Mcols]), na.rm=T)
+segments(x0=1,x1=59,y0=all,y1=all, lty=2, col="black", lwd=2)
+
+#add polygon shading
+for(i in seq(1, 60, 2)){
+  polygon(x=c((i-0.5), (i+0.5), (i+0.5), (i-0.5)), y=c(-0.10,-0.10,0.33,0.33), col=alpha("grey50", 0.25), border=F)
 }
-print(summary(glm(genS_K80~perrange, data=data[data$perrange>0,])))
 
-plot(-100,-100, xlim=c(0,0.35), ylim=c(0,0.3), xlab="prop. range overlap", ylab="mitochondrial divergence rate")
-#add regression line
-x0 = 0
-x1 = max(data$perrange, na.rm=T)
-y0 = (coef(lm(mtW_K80~perrange, data=data[data$perrange>0,]))[2]*x0)+coef(lm(mtW_K80~perrange, data=data[data$perrange>0,]))[1]
-y1 = (coef(lm(mtW_K80~perrange, data=data[data$perrange>0,]))[2]*x1)+coef(lm(mtW_K80~perrange, data=data[data$perrange>0,]))[1]
-segments(x0=x0, x1=x1, y1=y1, y0=y0, lty=1, col="grey20", lwd=3)
-for(c in 1:length(classes)){
-  t = data[data$class==as.character(classes[c]),,drop=F]
-  t$perrange[t$perrange==0] = NA
-  t = t[!is.na(t$perrange),,drop=FALSE]
-  points(t$perrange, t$mtW_K80, col=alpha(colors6[c], 0.5), pch=19, cex=1)
+#plot data by family/class
+ci = 0
+b = 0.35
+o = 0.05
+j = 0.005
+c6 = 0
+for(f in famorder){
+  ci = ci + 1
+  c6 = c6 + 1
+  tt = data[data$family==as.character(f),,drop=F]
+  tt = tt[!is.na(tt[,Mcols]),,drop=F]
+  points(x=(c6-sample(seq(j, 0.2, 0.01), nrow(tt), replace=T)), y=tt[,Mcols], col=alpha(colorder[ci], 1), pch=19, cex=0.75) #
 }
-print(summary(glm(mtW_K80~perrange, data=data[data$perrange>0,])))
-
-#2. if speices ranges are farther apart, estimated by the shortest distance between range edges, are they more diverged? - NO nuc, YES mt
-data$rdist_km = data$gDist/1000
-plot(-100,-100, xlim=c(0,13000), ylim=c(0,0.15), xlab="smallest distance between range edges (km)", ylab="divergence rate (Kimura 1980)")
-#add regression line
-x0 = 0
-x1 = max(data$rdist_km, na.rm=T)
-y0 = (coef(lm(genS_K80~rdist_km, data=data[data$rdist_km>0,]))[2]*x0)+coef(lm(genS_K80~rdist_km, data=data[data$rdist_km>0,]))[1]
-y1 = (coef(lm(genS_K80~rdist_km, data=data[data$rdist_km>0,]))[2]*x1)+coef(lm(genS_K80~rdist_km, data=data[data$rdist_km>0,]))[1]
-segments(x0=x0, x1=x1, y1=y1, y0=y0, lty=1, col="grey20", lwd=3)
-for(c in 1:length(classes)){
-  t = data[data$class==as.character(classes[c]),,drop=F]
-  t$rdist_km[t$rdist_km==0] = NA
-  t = t[!is.na(t$rdist_km),,drop=FALSE]
-  points(t$rdist_km, t$genS_K80, col=alpha(colors6[c], 0.5), pch=19, cex=1)
-}
-print(summary(lm(genS_K80~rdist_km, data=data)))
-
-plot(-100,-100, xlim=c(0,13000), ylim=c(0,0.3), xlab="smallest distance between range edges (km)", ylab="mitochondrial divergence rate")
-#add regression line
-x0 = 0
-x1 = max(data$rdist_km, na.rm=T)
-y0 = (coef(lm(mtW_K80~rdist_km, data=data[data$rdist_km>0,]))[2]*x0)+coef(lm(mtW_K80~rdist_km, data=data[data$rdist_km>0,]))[1]
-y1 = (coef(lm(mtW_K80~rdist_km, data=data[data$rdist_km>0,]))[2]*x1)+coef(lm(mtW_K80~rdist_km, data=data[data$rdist_km>0,]))[1]
-segments(x0=x0, x1=x1, y1=y1, y0=y0, lty=1, col="grey20", lwd=3)
-for(c in 1:length(classes)){
-  t = data[data$class==as.character(classes[c]),,drop=F]
-  t$rdist_km[t$rdist_km==0] = NA
-  t = t[!is.na(t$rdist_km),,drop=FALSE]
-  points(t$rdist_km, t$mtW_K80, col=alpha(colors6[c], 0.5), pch=19, cex=1)
-}
-print(summary(lm(mtW_K80~rdist_km, data=data)))
-
-#3a. when species ranges overlap more/less, are hybrids more/less likely? -NO
-data$hyb = rep(0, nrow(data))
-data$hyb[data$hybridize=="Y"] = 1
-
-plot(-100, -100, xlim=c(0,0.5), ylim=c(0,1), xlab="prop. range overlap", ylab="hybridize")
-for(c in 1:length(classes)){
-  t = data[data$class==as.character(classes[c]),,drop=F]
-  t = t[!is.na(t$perrange),,drop=FALSE]
-  points(t$perrange, t$hyb, col=alpha(colors6[c], 0.5), pch=19, cex=1)
-}
-print(summary(glm(hyb~perrange, data=data, family="binomial")))
-
-#3b. does range distance change probability of hybridization? - YES
-plot(-100, -100, xlim=c(0,13000), ylim=c(0,1), xlab="smallest distance between range edges (km)", ylab="hybridize")
-for(c in 1:length(classes)){
-  t = data[data$class==as.character(classes[c]),,drop=F]
-  t = t[!is.na(t$rdist_km),,drop=FALSE]
-  points(t$rdist_km, t$hyb, col=alpha(colors6[c], 0.5), pch=19, cex=1)
-}
-print(summary(glm(hyb~rdist_km, data=data, family="binomial")))
 dev.off()
-sink()
 
-####genome size####
-plot(data$sp1_assembly_length, data$sp2_assembly_length)
-plot(data$sp1_cvalue, data$sp2_cvalue)
-plot(data$sp2_cvalue, data$sp2_assembly_length)
-plot(data$sp1_cvalue, data$sp1_assembly_length)
+#summarize by class with half violin plots
+pdf("family_violin_coi.pdf", height=8, width=3)
+par(bg=NA)
+plot(-100, -100, xlim=c(0.5, 3), ylim=c(0,0.3), axes=T)
+tt = data[data$class=="Mammalia",,drop=F]
+vioplot(x=tt[,Mcols], col = alpha("firebrick3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=0.5)
+tt = data[data$class=="Reptilia",,drop=F]
+vioplot(x=tt[,Mcols], col = alpha("saddlebrown", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1)
+tt = data[data$class=="Actinopterygii",,drop=F]
+vioplot(x=tt[,Mcols], col = alpha("dodgerblue3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1.5)
+tt = data[data$class=="Aves",,drop=F]
+vioplot(x=tt[,Mcols], col = alpha("goldenrod3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=2)
+tt = data
+vioplot(x=tt[,Mcols], col = alpha("grey50", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=2.5)
+dev.off()
+
+#cytb divergence
+Mcols   = 18
+#set up plot
+pdf("family_divergence_cytb.pdf", height=5, width=8)
+par(bg=NA)
+plot(-100,-100, xlim=c(1,59), ylim=c(-0.10,0.33), xlab="Family", ylab="divergence rate (Kimura 1980)", axes=F)
+axis(side=1, at=seq(1,59,1), pos=-0.005, labels=F, lwd=0.75)
+segments(x0=0, x1=60,y0=-0.005, y1=-0.005, lwd=1)
+axis(side=2, at=seq(0,0.3,0.05), pos=0, labels=T, lwd=0.75)
+segments(x0=0, x1=0,y0=-0.005, y1=0.33, lwd=1)
+segments(x0=0, x1=60,y0=0.33, y1=0.33, lwd=1)
+segments(x0=60, x1=60,y0=0.33, y1=-0.005, lwd=1)
+
+#find cutoff value, add to plot
+all = mean(c(data[,Mcols]), na.rm=T) + sd(c(data[,Mcols]), na.rm=T)
+segments(x0=1,x1=59,y0=all,y1=all, lty=2, col="black", lwd=2)
+
+#add polygon shading
+for(i in seq(1, 60, 2)){
+  polygon(x=c((i-0.5), (i+0.5), (i+0.5), (i-0.5)), y=c(-0.10,-0.10,0.33,0.33), col=alpha("grey50", 0.25), border=F)
+}
+
+#plot data by family/class
+ci = 0
+b = 0.35
+o = 0.05
+j = 0.005
+c6 = 0
+for(f in famorder){
+  ci = ci + 1
+  c6 = c6 + 1
+  tt = data[data$family==as.character(f),,drop=F]
+  tt = tt[!is.na(tt[,Mcols]),,drop=F]
+  points(x=(c6-sample(seq(j, 0.2, 0.01), nrow(tt), replace=T)), y=tt[,Mcols], col=alpha(colorder[ci], 1), pch=19, cex=0.75) #
+}
+dev.off()
+
+#summarize by class with half violin plots
+pdf("family_violin_cytb.pdf", height=8, width=3)
+par(bg=NA)
+plot(-100, -100, xlim=c(0.5, 3), ylim=c(0,0.3), axes=T)
+tt = data[data$class=="Mammalia",,drop=F]
+vioplot(x=tt[,Mcols], col = alpha("firebrick3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=0.5)
+tt = data[data$class=="Reptilia",,drop=F]
+vioplot(x=tt[,Mcols], col = alpha("saddlebrown", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1)
+tt = data[data$class=="Actinopterygii",,drop=F]
+vioplot(x=tt[,Mcols], col = alpha("dodgerblue3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=1.5)
+tt = data[data$class=="Aves",,drop=F]
+vioplot(x=tt[,Mcols], col = alpha("goldenrod3", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=2)
+tt = data
+vioplot(x=tt[,Mcols], col = alpha("grey50", 1), plotCentre = "line", side = "right", ylim=c(-0.10,0.155), add=T, at=2.5)
+dev.off()
+
+

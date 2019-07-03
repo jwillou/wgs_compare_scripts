@@ -2,47 +2,98 @@ setwd("/Users/jannawilloughby/GDrive/WGS_divergence/data/range")
 library(scales)
 library(vioplot)
 library(phytools)
+colors  = c("saddlebrown", "goldenrod3", "dodgerblue2",    "firebrick2", "chartreuse3",    "darkorchid3") #
+classes = c("Reptilia",    "Aves",       "Actinopterygii", "Mammalia",   "Chondrichthyes", "Amphibia") #    
 
 #read in data
 data = read.table("../data_june19.csv", header=T, sep=",")
 
-pdf("biospp.pdf", height=5, width=5, onefile=T)
-sink("biospp_lm.txt")
-#how does species range location/overlap influence divergence
-colors6 = c("saddlebrown", "goldenrod3", "dodgerblue2",    "firebrick2", "chartreuse3",    "darkorchid3") #
-classes = c("Reptilia",    "Aves",       "Actinopterygii", "Mammalia",   "Chondrichthyes", "Amphibia") #    
-
 #1. does a larger range overlap mean that species are less diverged? - NO
 data$perrange = (data$gArea_Int / (data$gArea_sp1 + data$gArea_sp2))
-plot(-100,-100, xlim=c(0,0.35), ylim=c(0,0.15), xlab="prop. range overlap", ylab="nuclear divergence rate")
-#add regression line
-x0 = 0
-x1 = max(data$perrange, na.rm=T)
-y0 = (coef(lm(genS_K80~perrange, data=data[data$perrange>0,]))[2]*x0)+coef(lm(genS_K80~perrange, data=data[data$perrange>0,]))[1]
-y1 = (coef(lm(genS_K80~perrange, data=data[data$perrange>0,]))[2]*x1)+coef(lm(genS_K80~perrange, data=data[data$perrange>0,]))[1]
-segments(x0=x0, x1=x1, y1=y1, y0=y0, lty=1, col="grey20", lwd=3)
-for(c in 1:length(classes)){
-  t = data[data$class==as.character(classes[c]),,drop=F]
-  t$perrange[t$perrange==0] = NA
-  t = t[!is.na(t$perrange),,drop=FALSE]
-  points(t$perrange, t$genS_K80, col=alpha(colors6[c], 0.5), pch=19, cex=1)
-}
-print(summary(lm(genS_K80~perrange, data=data)))
 
-plot(-100,-100, xlim=c(0,0.35), ylim=c(0,0.3), xlab="prop. range overlap", ylab="mitochondrial divergence rate")
-#add regression line
-x0 = 0
-x1 = max(data$perrange, na.rm=T)
-y0 = (coef(lm(mtW_K80~perrange, data=data[data$perrange>0,]))[2]*x0)+coef(lm(mtW_K80~perrange, data=data[data$perrange>0,]))[1]
-y1 = (coef(lm(mtW_K80~perrange, data=data[data$perrange>0,]))[2]*x1)+coef(lm(mtW_K80~perrange, data=data[data$perrange>0,]))[1]
-segments(x0=x0, x1=x1, y1=y1, y0=y0, lty=1, col="grey20", lwd=3)
-for(c in 1:length(classes)){
-  t = data[data$class==as.character(classes[c]),,drop=F]
-  t$perrange[t$perrange==0] = NA
-  t = t[!is.na(t$perrange),,drop=FALSE]
-  points(t$perrange, t$mtW_K80, col=alpha(colors6[c], 0.5), pch=19, cex=1)
-}
-print(summary(lm(mtW_K80~perrange, data=data)))
+#nuclear
+pdf("rangeoverlap_genomic.pdf", height=5, width=5, onefile=T)
+sink("rangeoverlap_genomic.txt")
+plot(-100,-100, xlim=c(0,0.35), ylim=c(0,0.10), xlab="prop. range overlap", ylab="nuclear divergence rate")
+#mammal
+i = 4
+t = data[data$class==classes[i],]
+t$gen_K80[t$gen_K80==0] = 0.00001
+t = data.frame(gen_K80=log(t$gen_K80), perrange=t$perrange)
+t = t[t$perrange > 0,]
+t = t[complete.cases(t),]
+tlm = lm(gen_K80~perrange, data=t)
+shapiro.test(tlm$residuals)
+print(classes[i])
+print(summary(tlm))
+plotcurve = data.frame(x=t$perrange, y=predict(tlm))
+plotcurve$y = exp(plotcurve$y)
+plotcurve = plotcurve[order(plotcurve$x),]
+#lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
+lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
+points(x=t$perrange, y=exp(t$gen_K80), col=alpha(colors[i], 0.7), pch=16, cex=1)
+
+#bird
+i = 2
+t = data[data$class==classes[i],]
+t$gen_K80[t$gen_K80==0] = 0.00001
+t = data.frame(gen_K80=log(t$gen_K80), perrange=t$perrange)
+t = t[t$perrange > 0,]
+t = t[complete.cases(t),]
+tlm = lm(gen_K80~perrange, data=t)
+shapiro.test(tlm$residuals)
+print(classes[i])
+print(summary(tlm))
+plotcurve = data.frame(x=t$perrange, y=predict(tlm))
+plotcurve$y = exp(plotcurve$y)
+plotcurve = plotcurve[order(plotcurve$x),]
+#lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
+lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
+points(x=t$perrange, y=exp(t$gen_K80), col=alpha(colors[i], 0.7), pch=16, cex=1)
+
+dev.off()
+sink()
+
+#mt
+pdf("rangeoverlap_mt.pdf", height=5, width=5, onefile=T)
+sink("rangeoverlap_mt.txt")
+plot(-100,-100, xlim=c(0,0.35), ylim=c(0,0.20), xlab="prop. range overlap", ylab="mt divergence")
+
+#mammal
+i = 4
+t = data[data$class==classes[i],]
+t = data.frame(mtW_K80=log(t$mtW_K80), perrange=t$perrange)
+t = t[t$perrange > 0,]
+t = t[complete.cases(t),]
+tlm = lm(mtW_K80~perrange, data=t)
+shapiro.test(tlm$residuals)
+print(classes[i])
+print(summary(tlm))
+plotcurve = data.frame(x=t$perrange, y=predict(tlm))
+plotcurve$y = exp(plotcurve$y)
+plotcurve = plotcurve[order(plotcurve$x),]
+#lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
+lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
+points(x=t$perrange, y=exp(t$mtW_K80), col=alpha(colors[i], 0.7), pch=16, cex=1)
+
+#bird
+i = 2
+t = data[data$class==classes[i],]
+t = data.frame(mtW_K80=log(t$mtW_K80), perrange=t$perrange)
+t = t[t$perrange > 0,]
+t = t[complete.cases(t),]
+tlm = lm(mtW_K80~perrange, data=t)
+shapiro.test(tlm$residuals)
+print(classes[i])
+print(summary(tlm))
+plotcurve = data.frame(x=t$perrange, y=predict(tlm))
+plotcurve$y = exp(plotcurve$y)
+plotcurve = plotcurve[order(plotcurve$x),]
+#lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
+lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
+points(x=t$perrange, y=exp(t$mtW_K80), col=alpha(colors[i], 0.7), pch=16, cex=1)
+dev.off()
+sink()
 
 #2. if speices ranges are farther apart, estimated by the shortest distance between range edges, are they more diverged? - NO nuc, YES mt
 data$rdist_km = data$gDist/1000
