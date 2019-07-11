@@ -6,7 +6,7 @@ colors  = c("saddlebrown", "goldenrod3", "dodgerblue2",    "firebrick2", "chartr
 classes = c("Reptilia",    "Aves",       "Actinopterygii", "Mammalia",   "Chondrichthyes", "Amphibia") #    
 
 #read in data
-data = read.table("../data_june19.csv", header=T, sep=",")
+data = read.table("../data_july02.csv", header=T, sep=",")
 
 #1. does a larger range overlap mean that species are less diverged? - NO
 data$perrange = (data$gArea_Int / (data$gArea_sp1 + data$gArea_sp2))
@@ -18,8 +18,7 @@ plot(-100,-100, xlim=c(0,0.35), ylim=c(0,0.10), xlab="prop. range overlap", ylab
 #mammal
 i = 4
 t = data[data$class==classes[i],]
-t$gen_K80[t$gen_K80==0] = 0.00001
-t = data.frame(gen_K80=log(t$gen_K80), perrange=t$perrange)
+t = data.frame(gen_K80=sqrt(t$gen_K80), perrange=t$perrange)
 t = t[t$perrange > 0,]
 t = t[complete.cases(t),]
 tlm = lm(gen_K80~perrange, data=t)
@@ -27,17 +26,15 @@ shapiro.test(tlm$residuals)
 print(classes[i])
 print(summary(tlm))
 plotcurve = data.frame(x=t$perrange, y=predict(tlm))
-plotcurve$y = exp(plotcurve$y)
+plotcurve$y = (plotcurve$y)^2
 plotcurve = plotcurve[order(plotcurve$x),]
-#lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
 lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
-points(x=t$perrange, y=exp(t$gen_K80), col=alpha(colors[i], 0.7), pch=16, cex=1)
+points(x=t$perrange, y=(t$gen_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 
 #bird
 i = 2
 t = data[data$class==classes[i],]
-t$gen_K80[t$gen_K80==0] = 0.00001
-t = data.frame(gen_K80=log(t$gen_K80), perrange=t$perrange)
+t = data.frame(gen_K80=sqrt(t$gen_K80), perrange=t$perrange)
 t = t[t$perrange > 0,]
 t = t[complete.cases(t),]
 tlm = lm(gen_K80~perrange, data=t)
@@ -45,11 +42,10 @@ shapiro.test(tlm$residuals)
 print(classes[i])
 print(summary(tlm))
 plotcurve = data.frame(x=t$perrange, y=predict(tlm))
-plotcurve$y = exp(plotcurve$y)
+plotcurve$y = (plotcurve$y)^2
 plotcurve = plotcurve[order(plotcurve$x),]
-#lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
 lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
-points(x=t$perrange, y=exp(t$gen_K80), col=alpha(colors[i], 0.7), pch=16, cex=1)
+points(x=t$perrange, y=(t$gen_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 
 dev.off()
 sink()
@@ -62,7 +58,7 @@ plot(-100,-100, xlim=c(0,0.35), ylim=c(0,0.20), xlab="prop. range overlap", ylab
 #mammal
 i = 4
 t = data[data$class==classes[i],]
-t = data.frame(mtW_K80=log(t$mtW_K80), perrange=t$perrange)
+t = data.frame(mtW_K80=sqrt(t$mtW_K80), perrange=t$perrange)
 t = t[t$perrange > 0,]
 t = t[complete.cases(t),]
 tlm = lm(mtW_K80~perrange, data=t)
@@ -70,16 +66,15 @@ shapiro.test(tlm$residuals)
 print(classes[i])
 print(summary(tlm))
 plotcurve = data.frame(x=t$perrange, y=predict(tlm))
-plotcurve$y = exp(plotcurve$y)
+plotcurve$y = (plotcurve$y)^2
 plotcurve = plotcurve[order(plotcurve$x),]
-#lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
 lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
-points(x=t$perrange, y=exp(t$mtW_K80), col=alpha(colors[i], 0.7), pch=16, cex=1)
+points(x=t$perrange, y=(t$mtW_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 
 #bird
 i = 2
 t = data[data$class==classes[i],]
-t = data.frame(mtW_K80=log(t$mtW_K80), perrange=t$perrange)
+t = data.frame(mtW_K80=sqrt(t$mtW_K80), perrange=t$perrange)
 t = t[t$perrange > 0,]
 t = t[complete.cases(t),]
 tlm = lm(mtW_K80~perrange, data=t)
@@ -87,109 +82,94 @@ shapiro.test(tlm$residuals)
 print(classes[i])
 print(summary(tlm))
 plotcurve = data.frame(x=t$perrange, y=predict(tlm))
-plotcurve$y = exp(plotcurve$y)
+plotcurve$y = (plotcurve$y)^2
 plotcurve = plotcurve[order(plotcurve$x),]
-#lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
 lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
-points(x=t$perrange, y=exp(t$mtW_K80), col=alpha(colors[i], 0.7), pch=16, cex=1)
+points(x=t$perrange, y=(t$mtW_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 dev.off()
 sink()
 
-#2. if speices ranges are farther apart, estimated by the shortest distance between range edges, are they more diverged? - NO nuc, YES mt
+#2. if speices ranges are farther apart, estimated by the shortest distance between range edges, are they more diverged? - yes bird nuc, YES mt
 data$rdist_km = data$gDist/1000
-plot(-100,-100, xlim=c(0,13000), ylim=c(0,0.15), xlab="smallest distance between range edges (km)", ylab="divergence rate (Kimura 1980)")
-#add regression line
-x0 = 0
-x1 = max(data$rdist_km, na.rm=T)
-y0 = (coef(lm(genS_K80~rdist_km, data=data[data$rdist_km>0,]))[2]*x0)+coef(lm(genS_K80~rdist_km, data=data[data$rdist_km>0,]))[1]
-y1 = (coef(lm(genS_K80~rdist_km, data=data[data$rdist_km>0,]))[2]*x1)+coef(lm(genS_K80~rdist_km, data=data[data$rdist_km>0,]))[1]
-segments(x0=x0, x1=x1, y1=y1, y0=y0, lty=1, col="grey20", lwd=3)
-for(c in 1:length(classes)){
-  t = data[data$class==as.character(classes[c]),,drop=F]
-  t$rdist_km[t$rdist_km==0] = NA
-  t = t[!is.na(t$rdist_km),,drop=FALSE]
-  points(t$rdist_km, t$genS_K80, col=alpha(colors6[c], 0.5), pch=19, cex=1)
-}
-print(summary(lm(genS_K80~log(rdist_km+1), data=data)))
 
-plot(-100,-100, xlim=c(0,13000), ylim=c(0,0.3), xlab="smallest distance between range edges (km)", ylab="mitochondrial divergence rate")
-#add regression line
-x0 = 0
-x1 = max(data$rdist_km, na.rm=T)
-y0 = (coef(lm(mtW_K80~rdist_km, data=data[data$rdist_km>0,]))[2]*x0)+coef(lm(mtW_K80~rdist_km, data=data[data$rdist_km>0,]))[1]
-y1 = (coef(lm(mtW_K80~rdist_km, data=data[data$rdist_km>0,]))[2]*x1)+coef(lm(mtW_K80~rdist_km, data=data[data$rdist_km>0,]))[1]
-segments(x0=x0, x1=x1, y1=y1, y0=y0, lty=1, col="grey20", lwd=3)
-for(c in 1:length(classes)){
-  t = data[data$class==as.character(classes[c]),,drop=F]
-  t$rdist_km[t$rdist_km==0] = NA
-  t = t[!is.na(t$rdist_km),,drop=FALSE]
-  points(t$rdist_km, t$mtW_K80, col=alpha(colors6[c], 0.5), pch=19, cex=1)
-}
-print(summary(lm(mtW_K80~log(rdist_km+1), data=data)))
+#nuclear
+pdf("rangedist_genomic.pdf", height=5, width=5, onefile=T)
+sink("rangedist_genomic.txt")
+plot(-100,-100, xlim=c(0,13000), ylim=c(0,0.1), xlab="smallest distance between range edges (km)", ylab="nuclear divergence")
+#mammal
+i = 4
+t = data[data$class==classes[i],]
+t$rdist_km[t$rdist_km==0] = NA
+t = data.frame(gen_K80=sqrt(t$gen_K80), rdist_km=log(t$rdist_km))
+t = t[complete.cases(t),]
+tlm = lm(gen_K80~rdist_km, data=t)
+shapiro.test(tlm$residuals)
+print(classes[i])
+print(summary(tlm))
+plotcurve = data.frame(x=t$rdist_km, y=predict(tlm))
+plotcurve$y = (plotcurve$y)^2
+plotcurve$x = exp(plotcurve$x)
+plotcurve = plotcurve[order(plotcurve$x),]
+lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
+points(x=exp(t$rdist_km), y=(t$gen_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 
-#3a. when species ranges overlap more/less, are hybrids more/less likely? -NO
-data$hyb = rep(0, nrow(data))
-data$hyb[data$hybridize=="Y"] = 1
+#bird
+i = 2
+t = data[data$class==classes[i],]
+t$rdist_km[t$rdist_km==0] = NA
+t = data.frame(gen_K80=sqrt(t$gen_K80), rdist_km=log(t$rdist_km))
+t = t[complete.cases(t),]
+tlm = lm(gen_K80~rdist_km, data=t)
+shapiro.test(tlm$residuals)
+print(classes[i])
+print(summary(tlm))
+plotcurve = data.frame(x=t$rdist_km, y=predict(tlm))
+plotcurve$y = (plotcurve$y)^2
+plotcurve$x = exp(plotcurve$x)
+plotcurve = plotcurve[order(plotcurve$x),]
+lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
+points(x=exp(t$rdist_km), y=(t$gen_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 
-plot(-100, -100, xlim=c(0,0.5), ylim=c(0,1), xlab="prop. range overlap", ylab="hybridize")
-for(c in 1:length(classes)){
-  t = data[data$class==as.character(classes[c]),,drop=F]
-  t = t[!is.na(t$perrange),,drop=FALSE]
-  points(t$perrange, t$hyb, col=alpha(colors6[c], 0.5), pch=19, cex=1)
-}
-print(summary(glm(hyb~perrange, data=data, family="binomial")))
-
-#3b. does range distance change probability of hybridization? - YES
-plot(-100, -100, xlim=c(0,13000), ylim=c(0,1), xlab="smallest distance between range edges (km)", ylab="hybridize")
-for(c in 1:length(classes)){
-  t = data[data$class==as.character(classes[c]),,drop=F]
-  t = t[!is.na(t$rdist_km),,drop=FALSE]
-  points(t$rdist_km, t$hyb, col=alpha(colors6[c], 0.5), pch=19, cex=1)
-}
-print(summary(glm(hyb~log(rdist_km+1), data=data, family="binomial")))
 dev.off()
 sink()
 
+pdf("rangedist_mt.pdf", height=5, width=5, onefile=T)
+sink("rangedist_mt.txt")
+plot(-100,-100, xlim=c(0,13000), ylim=c(0,0.2), xlab="smallest distance between range edges (km)", ylab="mitochondrial divergence")
+#mammal
+i = 4
+t = data[data$class==classes[i],]
+t$rdist_km[t$rdist_km==0] = NA
+t = data.frame(mtW_K80=sqrt(t$mtW_K80), rdist_km=log(t$rdist_km))
+t = t[complete.cases(t),]
+tlm = lm(mtW_K80~rdist_km, data=t)
+shapiro.test(tlm$residuals)
+print(classes[i])
+print(summary(tlm))
+plotcurve = data.frame(x=t$rdist_km, y=predict(tlm))
+plotcurve$y = (plotcurve$y)^2
+plotcurve$x = exp(plotcurve$x)
+plotcurve = plotcurve[order(plotcurve$x),]
+lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
+points(x=exp(t$rdist_km), y=(t$mtW_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 
+#bird
+i = 2
+t = data[data$class==classes[i],]
+t$rdist_km[t$rdist_km==0] = NA
+t = data.frame(mtW_K80=sqrt(t$mtW_K80), rdist_km=log(t$rdist_km))
+t = t[complete.cases(t),]
+tlm = lm(mtW_K80~rdist_km, data=t)
+shapiro.test(tlm$residuals)
+print(classes[i])
+print(summary(tlm))
+plotcurve = data.frame(x=t$rdist_km, y=predict(tlm))
+plotcurve$y = (plotcurve$y)^2
+plotcurve$x = exp(plotcurve$x)
+plotcurve = plotcurve[order(plotcurve$x),]
+lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
+points(x=exp(t$rdist_km), y=(t$mtW_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 
+dev.off()
+sink()
 
-
-
-
-####classes
-for(c in c("Mammalia", "Aves")){
-  t = data[data$class==c,]
-  print(c)
-  print(summary(lm(genS_K80~log(rdist_km+1), data=t)))
-}
-
-
-plot(-100,-100, xlim=c(0,13000), ylim=c(0,0.15), xlab="smallest distance between range edges (km)", ylab="divergence rate (Kimura 1980)")
-#add regression line
-x0 = 0
-x1 = max(data$rdist_km, na.rm=T)
-y0 = (coef(lm(genS_K80~rdist_km, data=data[data$rdist_km>0,]))[2]*x0)+coef(lm(genS_K80~rdist_km, data=data[data$rdist_km>0,]))[1]
-y1 = (coef(lm(genS_K80~rdist_km, data=data[data$rdist_km>0,]))[2]*x1)+coef(lm(genS_K80~rdist_km, data=data[data$rdist_km>0,]))[1]
-segments(x0=x0, x1=x1, y1=y1, y0=y0, lty=1, col="grey20", lwd=3)
-for(c in 1:length(classes)){
-  t = data[data$class==as.character(classes[c]),,drop=F]
-  t$rdist_km[t$rdist_km==0] = NA
-  t = t[!is.na(t$rdist_km),,drop=FALSE]
-  points(t$rdist_km, t$genS_K80, col=alpha(colors6[c], 0.5), pch=19, cex=1)
-}
-print(summary(lm(genS_K80~log(rdist_km+1), data=data)))
-
-plot(-100,-100, xlim=c(0,13000), ylim=c(0,0.3), xlab="smallest distance between range edges (km)", ylab="mitochondrial divergence rate")
-#add regression line
-x0 = 0
-x1 = max(data$rdist_km, na.rm=T)
-y0 = (coef(lm(mtW_K80~rdist_km, data=data[data$rdist_km>0,]))[2]*x0)+coef(lm(mtW_K80~rdist_km, data=data[data$rdist_km>0,]))[1]
-y1 = (coef(lm(mtW_K80~rdist_km, data=data[data$rdist_km>0,]))[2]*x1)+coef(lm(mtW_K80~rdist_km, data=data[data$rdist_km>0,]))[1]
-segments(x0=x0, x1=x1, y1=y1, y0=y0, lty=1, col="grey20", lwd=3)
-for(c in 1:length(classes)){
-  t = data[data$class==as.character(classes[c]),,drop=F]
-  t$rdist_km[t$rdist_km==0] = NA
-  t = t[!is.na(t$rdist_km),,drop=FALSE]
-  points(t$rdist_km, t$mtW_K80, col=alpha(colors6[c], 0.5), pch=19, cex=1)
-}
-print(summary(lm(mtW_K80~log(rdist_km+1), data=data)))

@@ -4,7 +4,7 @@ library(vioplot)
 library(phytools)
 
 #read in data
-data = read.table("../data_june19.csv", header=T, sep=",")####assembly size####
+data = read.table("../data_july02.csv", header=T, sep=",")####assembly size####
 
 ####assembly quality####
 data$assembly = rep(0, nrow(data))
@@ -56,6 +56,8 @@ sink()
 
 ####number of chromosomes####
 data$meannc = apply(cbind(data$sp1_chrom_num, data$sp2_chrom_num), 1, mean)
+
+
 sink("numberchroms.txt")
 print("all")
 print(summary(lm(gen_K80~meannc, data=data)))

@@ -4,7 +4,7 @@ library(vioplot)
 library(phytools)
 
 #read in data
-data = read.table("../data_june19.csv", header=T, sep=",")
+data = read.table("../data_july02.csv", header=T, sep=",")
 
 classes = row.names(table(data$class, data$sisterspp)[table(data$class, data$sisterspp)[,4]>0,])
 OUT = NULL
@@ -12,9 +12,9 @@ for(c in classes){
   t = data[data$class==c,]
   ts = t$gen_K80[t$sisterspp=="yes"]
   tg = t$gen_K80[t$sisterspp=="no"]
-  OUT = rbind(OUT, c(c, length(ts), round(mean(ts, na.rm=T), 4), round(quantile(ts, probs=0.025, na.rm=T), 4), round(quantile(ts, probs=0.975, na.rm=T), 4), length(tg), round(mean(tg, na.rm=T), 4), round(quantile(tg, probs=0.025, na.rm=T), 4), round(quantile(tg, probs=0.975, na.rm=T), 4)))
+  OUT = rbind(OUT, c(c, length(ts), round(mean(ts, na.rm=T), 4), round(quantile(ts, probs=0.025, na.rm=T), 4), round(quantile(ts, probs=0.975, na.rm=T), 4), length(tg), round(mean(tg, na.rm=T), 4), round(quantile(tg, probs=0.025, na.rm=T), 4), round(quantile(tg, probs=0.975, na.rm=T), 4), round((mean(tg, na.rm=T)-sd(tg, na.rm=T)), 4),round((mean(tg, na.rm=T)+sd(tg, na.rm=T)), 4), round(sd(tg, na.rm=T), 4) ))
 }
-colnames(OUT) = c("class", "n_ss", "mean_ss", "lowerq_ss", "upperq_ss", "n_gs", "mean_gs", "lowerq_gs", "upperq_gs")
+colnames(OUT) = c("class", "n_ss", "mean_ss", "lowerq_ss", "upperq_ss", "n_gs", "mean_gs", "lowerq_gs", "upperq_gs", "lowerq_gsMSD", "upperq_gsMSD", "sd_gs")
 sumgen = OUT
 
 OUT = NULL
@@ -24,9 +24,9 @@ for(c in classes){
   t = tdata[tdata$class==c,]
   ts = t$mt_K80[t$sisterspp=="yes"]
   tg = t$mt_K80[t$sisterspp=="no"]
-  OUT = rbind(OUT, c(c, length(ts), round(mean(ts, na.rm=T), 4), round(quantile(ts, probs=0.025, na.rm=T), 4), round(quantile(ts, probs=0.975, na.rm=T), 4), length(tg), round(mean(tg, na.rm=T), 4), round(quantile(tg, probs=0.025, na.rm=T), 4), round(quantile(tg, probs=0.975, na.rm=T), 4)))
+  OUT = rbind(OUT, c(c, length(ts), round(mean(ts, na.rm=T), 4), round(quantile(ts, probs=0.025, na.rm=T), 4), round(quantile(ts, probs=0.975, na.rm=T), 4), length(tg), round(mean(tg, na.rm=T), 4), round(quantile(tg, probs=0.025, na.rm=T), 4), round(quantile(tg, probs=0.975, na.rm=T), 4), round((mean(tg, na.rm=T)-sd(tg, na.rm=T)), 4),round((mean(tg, na.rm=T)+sd(tg, na.rm=T)), 4), round(sd(tg, na.rm=T), 4) ))
 }
-colnames(OUT) = c("class", "n_ss", "mean_ss", "lowerq_ss", "upperq_ss", "n_gs", "mean_gs", "lowerq_gs", "upperq_gs")
+colnames(OUT) = c("class", "n_ss", "mean_ss", "lowerq_ss", "upperq_ss", "n_gs", "mean_gs", "lowerq_gs", "upperq_gs", "lowerq_gsMSD", "upperq_gsMSD", "sd_gs")
 summt = OUT
 
 #make plots
@@ -35,10 +35,10 @@ classes = c("Mammalia",   "Actinopterygii",  "Aves") #
 
 #genomic
 sumgen = as.data.frame(sumgen)
-sumgen$lowerq_gs = as.numeric(as.character(sumgen$lowerq_gs))
-sumgen$upperq_gs = as.numeric(as.character(sumgen$upperq_gs))
-sumgen$mean_gs   = as.numeric(as.character(sumgen$mean_gs))
-sumgen$mean_ss   = as.numeric(as.character(sumgen$mean_ss))
+sumgen$lowerq_gsMSD = as.numeric(as.character(sumgen$lowerq_gsMSD))
+sumgen$upperq_gsMSD = as.numeric(as.character(sumgen$upperq_gsMSD))
+sumgen$mean_gs      = as.numeric(as.character(sumgen$mean_gs))
+sumgen$mean_ss      = as.numeric(as.character(sumgen$mean_ss))
 write.table(sumgen, "sissp_genomic.csv", sep=",", col.names=T, row.names=F)
 pdf("sisp_genomic.pdf", height=5, width=4)
 plot(-100, -100, xlim=c(0.5,3.5), ylim=c(-0.01, 0.17), xlab=NA, ylab="nuclear divergence rate", axes=F)
@@ -53,7 +53,7 @@ for(c in classes){
   i = i + 1 
   t = data[data$class==as.character(c) & !is.na(data$gen_K80) & data$sisterspp=="no",]
   g = sumgen[sumgen$class==c,]
-  polygon(x=c((i-0.1),(i+0.1),(i+0.1),(i-0.1)), y=c(g$lowerq_gs, g$lowerq_gs, g$upperq_gs, g$upperq_gs), col=alpha(colors[i], 0.4), border=F, lwd=2)
+  polygon(x=c((i-0.1),(i+0.1),(i+0.1),(i-0.1)), y=c(g$lowerq_gsMSD, g$lowerq_gsMSD, g$upperq_gsMSD, g$upperq_gsMSD), col=alpha(colors[i], 0.4), border=F, lwd=2)
   segments(x0=(i-0.2), x1=(i+0.2), y0=g$mean_gs, y1=g$mean_gs, lty=1, lwd=3, col="grey50")
   points(x=i+sample(seq(-0.1,0.1,0.01), nrow(t), replace=T), y=t$gen_K80, col=alpha(colors[i], 0.8), pch=16, cex=0.75)
   t = data[data$class==as.character(c) & !is.na(data$gen_K80) & data$sisterspp=="yes",]
@@ -64,10 +64,10 @@ dev.off()
 
 #mt
 summt = as.data.frame(summt)
-summt$lowerq_gs = as.numeric(as.character(summt$lowerq_gs))
-summt$upperq_gs = as.numeric(as.character(summt$upperq_gs))
-summt$mean_gs   = as.numeric(as.character(summt$mean_gs))
-summt$mean_ss   = as.numeric(as.character(summt$mean_ss))
+summt$lowerq_gsMSD = as.numeric(as.character(summt$lowerq_gsMSD))
+summt$upperq_gsMSD = as.numeric(as.character(summt$upperq_gsMSD))
+summt$mean_gs      = as.numeric(as.character(summt$mean_gs))
+summt$mean_ss      = as.numeric(as.character(summt$mean_ss))
 write.table(summt, "sissp_mt.csv", sep=",", col.names=T, row.names=F)
 pdf("sisp_mt.pdf", height=5, width=4)
 plot(-100, -100, xlim=c(0.5,3.5), ylim=c(-0.01, 0.34), xlab=NA, ylab="mitochondrial divergence rate", axes=F)
@@ -82,7 +82,7 @@ for(c in classes){
   i = i + 1 
   t = data[data$class==as.character(c) & !is.na(data$mt_K80) & data$sisterspp=="no",]
   g = summt[summt$class==c,]
-  polygon(x=c((i-0.1),(i+0.1),(i+0.1),(i-0.1)), y=c(g$lowerq_gs, g$lowerq_gs, g$upperq_gs, g$upperq_gs), col=alpha(colors[i], 0.4), border=F, lwd=2)
+  polygon(x=c((i-0.1),(i+0.1),(i+0.1),(i-0.1)), y=c(g$lowerq_gsMSD, g$lowerq_gsMSD, g$upperq_gsMSD, g$upperq_gsMSD), col=alpha(colors[i], 0.4), border=F, lwd=2)
   segments(x0=(i-0.2), x1=(i+0.2), y0=g$mean_gs, y1=g$mean_gs, lty=1, lwd=3, col="grey50")
   points(x=i+sample(seq(-0.1,0.1,0.01), nrow(t), replace=T), y=t$mt_K80, col=alpha(colors[i], 0.8), pch=16, cex=0.75)
   t = data[data$class==as.character(c) & !is.na(data$mt_K80) & data$sisterspp=="yes",]
