@@ -46,6 +46,19 @@ for(r in 1:nrow(data)){
     }
   }
 }
+data$meante = apply(cbind(data$sp1_prop, data$sp2_prop), 1, mean, na.rm=T)
+for(r in 1:nrow(data)){
+  if(is.na(data$meante[r])){
+    if(!is.na(data$sp1_prop[r])){
+      data$meante[r] = data$sp1_prop[r]
+      next
+    }
+    if(!is.na(data$sp2_prop[r])){
+      data$meante[r] = data$sp2_prop[r]
+      next
+    }
+  }
+}
 data$perrange = (data$gArea_Int / (data$gArea_sp1 + data$gArea_sp2))
 data$rdist_km = data$gDist/1000
 
@@ -129,6 +142,21 @@ for(c in classes){
   tmp = c(tmp, c(c, "bodysize", "std", "mt", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared)))
   OUT = rbind(OUT, tmp)
 }
+
+#mean tes - nuclear 
+classes = c("Mammalia", "Aves", "Actinopterygii") #mammal, bird
+for(c in classes){
+  t = data[data$class==c,]
+  t = data.frame(y=sqrt(t$gen_K80), x=t$meante)
+  t = t[complete.cases(t),]
+  tlm = lm(y~x, data=t)
+  tmp = c(c, "te", "raw", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared))
+  t$y = scale(t$y, scale=T, center=T)[,1]
+  tlm = lm(y~x, data=t)
+  tmp = c(tmp, c(c, "te", "std", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared)))
+  OUT = rbind(OUT, tmp)
+}
+
 #range distance - nuclear and mt divergence
 classes = c("Mammalia", "Aves") #mammal, bird
 for(c in classes){
