@@ -21,7 +21,6 @@ for(r in 1:nrow(data)){
   }
 }
 
-
 colors  = c("firebrick2", "dodgerblue2",     "goldenrod3") #
 classes = c("Mammalia",   "Actinopterygii",  "Aves") #  
 

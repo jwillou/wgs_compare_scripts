@@ -4,7 +4,7 @@ library(vioplot)
 library(phytools)
 
 #read in data
-data = read.table("../data_july02.csv", header=T, sep=",")
+data = read.table("../data_sept10.csv", header=T, sep=",")
 
 ####class####
 pdf("family/classcompare.pdf", height=5, width=5, onefile=T)

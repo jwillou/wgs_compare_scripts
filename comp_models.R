@@ -4,7 +4,7 @@ library(vioplot)
 library(phytools)
 
 #read in data
-data = read.table("data_july02.csv", header=T, sep=",")
+data = read.table("data_sept10.csv", header=T, sep=",")
 
 #update variables
 data$meanbd = apply(cbind(data$sp1_bodysize, data$sp2_bodysize), 1, mean)
@@ -85,8 +85,8 @@ for(c in classes){
   t = data.frame(y=sqrt(t$gen_K80), x=t$meanc)
   t = t[complete.cases(t),]
   tlm = lm(y~x, data=t)
-  tmp = c(c, "genome size", "raw", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared))
-  t$y = scale(t$y, scale=T, center=T)[,1]
+  tmp = c(c, "genome size", "raw", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared)
+  t$x = scale(t$x, scale=T, center=T)[,1]
   tlm = lm(y~x, data=t)
   tmp = c(tmp, c(c, "genome size", "std", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared)))
   OUT = rbind(OUT, tmp)
@@ -102,8 +102,8 @@ for(c in classes){
   t = data.frame(y=sqrt(t$gen_K80), x=t$meangen)
   t = t[complete.cases(t),]
   tlm = lm(y~x, data=t)
-  tmp = c(c, "generationtime", "raw", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared))
-  t$y = scale(t$y, scale=T, center=T)[,1]
+  tmp = c(c, "generationtime", "raw", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared)
+  t$x = scale(t$x, scale=T, center=T)[,1]
   tlm = lm(y~x, data=t)
   tmp = c(tmp, c(c, "generationtime", "std", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared)))
   OUT = rbind(OUT, tmp)
@@ -112,8 +112,8 @@ for(c in classes){
   t = data.frame(y=sqrt(t$mtW_K80), x=t$meangen)
   t = t[complete.cases(t),]
   tlm = lm(y~x, data=t)
-  tmp = c(c, "generationtime", "raw", "mt", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared))
-  t$y = scale(t$y, scale=T, center=T)[,1]
+  tmp = c(c, "generationtime", "raw", "mt", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared)
+  t$x = scale(t$x, scale=T, center=T)[,1]
   tlm = lm(y~x, data=t)
   tmp = c(tmp, c(c, "generationtime", "std", "mt", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared)))
   OUT = rbind(OUT, tmp)
@@ -123,21 +123,27 @@ for(c in classes){
 classes = c("Mammalia", "Aves", "Actinopterygii") #mammal, bird
 for(c in classes){
   t = data[data$class==c,]
-  t = data.frame(y=sqrt(t$gen_K80), x=log(t$meanbd))
+  if(c=="Mammalia"){
+    t$meanbd = t$meanbd/1000
+  }
+  t = data.frame(y=sqrt(t$gen_K80), x=sqrt(t$meanbd))
   t = t[complete.cases(t),]
   tlm = lm(y~x, data=t)
-  tmp = c(c, "bodysize", "raw", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared))
-  t$y = scale(t$y, scale=T, center=T)[,1]
+  tmp = c(c, "bodysize", "raw", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared)
+  t$x = scale(t$x, scale=T, center=T)[,1]
   tlm = lm(y~x, data=t)
   tmp = c(tmp, c(c, "bodysize", "std", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared)))
   OUT = rbind(OUT, tmp)
   
   t = data[data$class==c,]
-  t = data.frame(y=sqrt(t$mtW_K80), x=log(t$meanbd))
+  if(c=="Mammalia"){
+    t$meanbd = t$meanbd/1000
+  }
+  t = data.frame(y=sqrt(t$mtW_K80), x=sqrt(t$meanbd))
   t = t[complete.cases(t),]
   tlm = lm(y~x, data=t)
-  tmp = c(c, "bodysize", "raw", "mt", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared))
-  t$y = scale(t$y, scale=T, center=T)[,1]
+  tmp = c(c, "bodysize", "raw", "mt", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared)
+  t$x = scale(t$x, scale=T, center=T)[,1]
   tlm = lm(y~x, data=t)
   tmp = c(tmp, c(c, "bodysize", "std", "mt", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared)))
   OUT = rbind(OUT, tmp)
@@ -150,8 +156,8 @@ for(c in classes){
   t = data.frame(y=sqrt(t$gen_K80), x=t$meante)
   t = t[complete.cases(t),]
   tlm = lm(y~x, data=t)
-  tmp = c(c, "te", "raw", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared))
-  t$y = scale(t$y, scale=T, center=T)[,1]
+  tmp = c(c, "te", "raw", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared)
+  t$x = scale(t$x, scale=T, center=T)[,1]
   tlm = lm(y~x, data=t)
   tmp = c(tmp, c(c, "te", "std", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared)))
   OUT = rbind(OUT, tmp)
@@ -164,8 +170,8 @@ for(c in classes){
   t = data.frame(y=sqrt(t$gen_K80), x=log(t$rdist_km))
   t = t[complete.cases(t),]
   tlm = lm(y~x, data=t)
-  tmp = c(c, "mindist", "raw", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared))
-  t$y = scale(t$y, scale=T, center=T)[,1]
+  tmp = c(c, "mindist", "raw", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared)
+  t$x = scale(t$x, scale=T, center=T)[,1]
   tlm = lm(y~x, data=t)
   tmp = c(tmp, c(c, "mindist", "std", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared)))
   OUT = rbind(OUT, tmp)
@@ -174,8 +180,8 @@ for(c in classes){
   t = data.frame(y=sqrt(t$mtW_K80), x=log(t$rdist_km))
   t = t[complete.cases(t),]
   tlm = lm(y~x, data=t)
-  tmp = c(c, "mindist", "raw", "mt", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared))
-  t$y = scale(t$y, scale=T, center=T)[,1]
+  tmp = c(c, "mindist", "raw", "mt", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared)
+  t$x = scale(t$x, scale=T, center=T)[,1]
   tlm = lm(y~x, data=t)
   tmp = c(tmp, c(c, "mindist", "std", "mt", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared)))
   OUT = rbind(OUT, tmp)
@@ -188,8 +194,8 @@ for(c in classes){
   t = data.frame(y=sqrt(t$gen_K80), x=t$perrange)
   t = t[complete.cases(t),]
   tlm = lm(y~x, data=t)
-  tmp = c(c, "rangeoverlap", "raw", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared))
-  t$y = scale(t$y, scale=T, center=T)[,1]
+  tmp = c(c, "rangeoverlap", "raw", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared)
+  t$x = scale(t$x, scale=T, center=T)[,1]
   tlm = lm(y~x, data=t)
   tmp = c(tmp, c(c, "rangeoverlap", "std", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared)))
   OUT = rbind(OUT, tmp)
@@ -198,12 +204,12 @@ for(c in classes){
   t = data.frame(y=sqrt(t$mtW_K80), x=t$perrange)
   t = t[complete.cases(t),]
   tlm = lm(y~x, data=t)
-  tmp = c(c, "rangeoverlap", "raw", "mt", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared))
-  t$y = scale(t$y, scale=T, center=T)[,1]
+  tmp = c(c, "rangeoverlap", "raw", "mt", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared)
+  t$x = scale(t$x, scale=T, center=T)[,1]
   tlm = lm(y~x, data=t)
   tmp = c(tmp, c(c, "rangeoverlap", "std", "mt", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$fstatistic, summary(tlm)$r.squared, summary(tlm)$r.squared/(1-summary(tlm)$r.squared)))
   OUT = rbind(OUT, tmp)
 }
 
-colnames(OUT) = c("class", "x", "regtype", "y", "intM", "intSE", "slopeM", "slopeSE", "f", "df1", "df2", "r2", "cohens","class", "x", "regtype", "y", "intM", "intSE", "slopeM", "slopeSE", "f", "df1", "df2", "r2", "cohens")
+colnames(OUT) = c("class", "x", "regtype", "y", "intM", "intSE", "slopeM", "slopeSE", "f", "df1", "df2", "r2","class", "x", "regtype", "y", "intM", "intSE", "slopeM", "slopeSE", "f", "df1", "df2", "r2", "cohens")
 write.table(OUT, "statscompare.csv", sep=",", row.names=F, col.names=T)

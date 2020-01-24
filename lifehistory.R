@@ -4,7 +4,7 @@ library(vioplot)
 library(phytools)
 
 #read in data
-data = read.table("../data_july02.csv", header=T, sep=",")
+data = read.table("../data_sept10.csv", header=T, sep=",")
 
 ####body size####
 sink(file="bodysize_genomic.txt")
@@ -42,7 +42,7 @@ segments(x0=505000,x1=505000, y0=-0.01, y1=0.11)
 i = 1
 t = data[data$class==classes[i],]
 t = t[t$meanbd < 800000, ]
-t = data.frame(meanbd=log(t$meanbd), gen_K80=sqrt(t$gen_K80))
+t = data.frame(meanbd=sqrt(t$meanbd), gen_K80=sqrt(t$gen_K80))
 t = t[complete.cases(t),]
 tlm = lm(gen_K80~meanbd, data=t)
 print("mammal body size")
@@ -50,10 +50,10 @@ print(summary(tlm))
 shapiro.test(tlm$residuals)
 plotcurve = data.frame(x=t$meanbd, y=predict(tlm))
 plotcurve$y = (plotcurve$y)^2
-plotcurve$x = exp(plotcurve$x)
+plotcurve$x = (plotcurve$x)^2
 plotcurve = plotcurve[order(plotcurve$x),]
 lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
-points(x=exp(t$meanbd), y=(t$gen_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
+points(x=(t$meanbd)^2, y=(t$gen_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 dev.off()
 
 #mammal
@@ -69,16 +69,16 @@ segments(x0=105,x1=105, y0=-0.01, y1=0.11)
 i = 1
 t = data[data$class==classes[i],]
 t = t[t$meanbd < 800000, ]
-t = data.frame(meanbd=log(t$meanbd), gen_K80=sqrt(t$gen_K80))
+t = data.frame(meanbd=sqrt(t$meanbd), gen_K80=sqrt(t$gen_K80))
 t = t[complete.cases(t),]
 tlm = lm(gen_K80~meanbd, data=t)
-plotcurve = data.frame(x=log(seq(5,100,1)), y=as.numeric(tlm$coefficients[1]+(tlm$coefficients[2]*log(seq(5,100,1)))))
+plotcurve = data.frame(x=sqrt(seq(5,100,1)), y=as.numeric(tlm$coefficients[1]+(tlm$coefficients[2]*sqrt(seq(5,100,1)))))
 plotcurve$y = (plotcurve$y)^2
-plotcurve$x = exp(plotcurve$x)
+plotcurve$x = (plotcurve$x)^2
 plotcurve = plotcurve[order(plotcurve$x),]
 plotcurve = plotcurve[plotcurve$x<2001,]
 lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
-points(x=exp(t$meanbd), y=(t$gen_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
+points(x=(t$meanbd)^2, y=(t$gen_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 dev.off()
 
 #bird
@@ -93,18 +93,18 @@ segments(x0=-100,x1=6040, y0=0.11,  y1=0.11)
 segments(x0=6040,x1=6040, y0=-0.01, y1=0.11)
 i = 2
 t = data[data$class==classes[i],]
-t = data.frame(meanbd=log(t$meanbd), gen_K80=sqrt(t$gen_K80))
+t = data.frame(meanbd=sqrt(t$meanbd), gen_K80=sqrt(t$gen_K80))
 t = t[complete.cases(t),]
 tlm = lm(gen_K80~meanbd, data=t)
 print("bird body size")
 print(summary(tlm))
 shapiro.test(tlm$residuals)
-plotcurve = data.frame(x=log(seq(8,5400,5)), y=as.numeric(tlm$coefficients[1]+(tlm$coefficients[2]*log(seq(8,5400,5)))))
+plotcurve = data.frame(x=sqrt(seq(8,5400,5)), y=as.numeric(tlm$coefficients[1]+(tlm$coefficients[2]*sqrt(seq(8,5400,5)))))
 plotcurve$y = (plotcurve$y)^2
-plotcurve$x = exp(plotcurve$x)
+plotcurve$x = (plotcurve$x)^2
 plotcurve = plotcurve[order(plotcurve$x),]
 lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
-points(x=exp(t$meanbd), y=(t$gen_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
+points(x=(t$meanbd)^2, y=(t$gen_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 dev.off()
 
 #fish
@@ -119,19 +119,19 @@ segments(x0=-5,x1=405, y0=0.11,  y1=0.11)
 segments(x0=405,x1=405, y0=-0.01, y1=0.11)
 i = 3
 t = data[data$class==classes[i],]
-t = data.frame(meanbd=log(t$meanbd), gen_K80=sqrt(t$gen_K80))
+t = data.frame(meanbd=sqrt(t$meanbd), gen_K80=sqrt(t$gen_K80))
 t = t[complete.cases(t),]
 tlm = lm(gen_K80~meanbd, data=t)
 print("fish body size")
 print(summary(tlm))
 shapiro.test(tlm$residuals)
-plotcurve = data.frame(x=log(seq(3.6,379,1)), y=as.numeric(tlm$coefficients[1]+(tlm$coefficients[2]*log(seq(3.6,379,1)))))
+plotcurve = data.frame(x=sqrt(seq(3.6,379,1)), y=as.numeric(tlm$coefficients[1]+(tlm$coefficients[2]*sqrt(seq(3.6,379,1)))))
 plotcurve$y = (plotcurve$y)^2
-plotcurve$x = exp(plotcurve$x)
+plotcurve$x = (plotcurve$x)^2
 plotcurve = plotcurve[order(plotcurve$x),]
 lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
 t = t[t$gen_K80 < sqrt(0.1), ]
-points(x=exp(t$meanbd), y=(t$gen_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
+points(x=(t$meanbd)^2, y=(t$gen_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 dev.off()
 
 sink()  
@@ -152,7 +152,7 @@ segments(x0=505000,x1=505000, y0=-0.01, y1=0.31)
 i = 1
 t = data[data$class==classes[i],]
 t = t[t$meanbd < 800000, ]
-t = data.frame(meanbd=log(t$meanbd), mtW_K80=sqrt(t$mtW_K80))
+t = data.frame(meanbd=sqrt(t$meanbd), mtW_K80=sqrt(t$mtW_K80))
 t = t[complete.cases(t),]
 tlm = lm(mtW_K80~meanbd, data=t)
 print("mammal body size")
@@ -160,10 +160,10 @@ print(summary(tlm))
 shapiro.test(tlm$residuals)
 plotcurve = data.frame(x=t$meanbd, y=predict(tlm))
 plotcurve$y = (plotcurve$y)^2
-plotcurve$x = exp(plotcurve$x)
+plotcurve$x = (plotcurve$x)^2
 plotcurve = plotcurve[order(plotcurve$x),]
 lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
-points(x=exp(t$meanbd), y=(t$mtW_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
+points(x=(t$meanbd)^2, y=(t$mtW_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 dev.off()
 
 #mammal
@@ -179,16 +179,16 @@ segments(x0=105,x1=105, y0=-0.01, y1=0.31)
 i = 1
 t = data[data$class==classes[i],]
 t = t[t$meanbd < 800000, ]
-t = data.frame(meanbd=log(t$meanbd), mtW_K80=sqrt(t$mtW_K80))
+t = data.frame(meanbd=sqrt(t$meanbd), mtW_K80=sqrt(t$mtW_K80))
 t = t[complete.cases(t),]
 tlm = lm(mtW_K80~meanbd, data=t)
-plotcurve = data.frame(x=log(seq(5,100,1)), y=as.numeric(tlm$coefficients[1]+(tlm$coefficients[2]*log(seq(5,100,1)))))
+plotcurve = data.frame(x=sqrt(seq(5,100,1)), y=as.numeric(tlm$coefficients[1]+(tlm$coefficients[2]*sqrt(seq(5,100,1)))))
 plotcurve$y = (plotcurve$y)^2
-plotcurve$x = exp(plotcurve$x)
+plotcurve$x = (plotcurve$x)^2
 plotcurve = plotcurve[order(plotcurve$x),]
 plotcurve = plotcurve[plotcurve$x<2001,]
 lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
-points(x=exp(t$meanbd), y=(t$mtW_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
+points(x=(t$meanbd)^2, y=(t$mtW_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 dev.off()
 
 #bird
@@ -203,18 +203,18 @@ segments(x0=-100,x1=6040, y0=0.31,  y1=0.31)
 segments(x0=6040,x1=6040, y0=-0.01, y1=0.31)
 i = 2
 t = data[data$class==classes[i],]
-t = data.frame(meanbd=log(t$meanbd), mtW_K80=sqrt(t$mtW_K80))
+t = data.frame(meanbd=sqrt(t$meanbd), mtW_K80=sqrt(t$mtW_K80))
 t = t[complete.cases(t),]
 tlm = lm(mtW_K80~meanbd, data=t)
 print("bird body size")
 print(summary(tlm))
 shapiro.test(tlm$residuals)
-plotcurve = data.frame(x=log(seq(320,5400,50)), y=as.numeric(tlm$coefficients[1]+(tlm$coefficients[2]*log(seq(320,5400,50)))))
+plotcurve = data.frame(x=sqrt(seq(320,5400,50)), y=as.numeric(tlm$coefficients[1]+(tlm$coefficients[2]*sqrt(seq(320,5400,50)))))
 plotcurve$y = (plotcurve$y)^2
-plotcurve$x = exp(plotcurve$x)
+plotcurve$x = (plotcurve$x)^2
 plotcurve = plotcurve[order(plotcurve$x),]
 lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
-points(x=exp(t$meanbd), y=(t$mtW_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
+points(x=(t$meanbd)^2, y=(t$mtW_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 dev.off()
 
 #fish
@@ -229,18 +229,18 @@ segments(x0=-5,x1=405, y0=0.31,  y1=0.31)
 segments(x0=405,x1=405, y0=-0.01, y1=0.31)
 i = 3
 t = data[data$class==classes[i],]
-t = data.frame(meanbd=log(t$meanbd), mtW_K80=sqrt(t$mtW_K80))
+t = data.frame(meanbd=sqrt(t$meanbd), mtW_K80=sqrt(t$mtW_K80))
 t = t[complete.cases(t),]
 tlm = lm(mtW_K80~meanbd, data=t)
 print("fish body size")
 print(summary(tlm))
 shapiro.test(tlm$residuals)
-plotcurve = data.frame(x=log(seq(3.6,379,1)), y=as.numeric(tlm$coefficients[1]+(tlm$coefficients[2]*log(seq(3.6,379,1)))))
+plotcurve = data.frame(x=sqrt(seq(3.6,379,1)), y=as.numeric(tlm$coefficients[1]+(tlm$coefficients[2]*sqrt(seq(3.6,379,1)))))
 plotcurve$y = (plotcurve$y)^2
-plotcurve$x = exp(plotcurve$x)
+plotcurve$x = (plotcurve$x)^2
 plotcurve = plotcurve[order(plotcurve$x),]
 lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
-points(x=exp(t$meanbd), y=(t$mtW_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
+points(x=(t$meanbd)^2, y=(t$mtW_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 dev.off()
 
 sink()  
