@@ -2,7 +2,7 @@ setwd("/Users/jannawilloughby/GDrive/WGS_divergence/data/nuc_mt/")
 library(scales)
 
 #read in data
-data = read.table("../data_sept10.csv", header=T, sep=",")
+data = read.table("../data_feb7.csv", header=T, sep=",")
 
 #all classes - mt vs. genomic
 colors6 = c("saddlebrown", "goldenrod3", "dodgerblue2",    "firebrick2", "chartreuse3",    "darkorchid3") #
@@ -67,7 +67,7 @@ for(c in classes){
   #if(ci==1 | ci==5 | ci==6){next}
   t = data[data$class==as.character(c),,drop=F]
   points(y=t$gen_K80, x=t$mtW_K80, pch=19, col=alpha(colors6[ci], 0.5))
-  print(c)
+  c=print(c)
   print(mean(c(t$gen_K80/t$mtW_K80), na.rm=T))
   print(length(t$mtW_K80[!is.na(t$mtW_K80)]))
   print(length(t$gen_K80[!is.na(t$gen_K80)]))
@@ -325,3 +325,4 @@ dev.off()
 sink()
 
 ####end####
+

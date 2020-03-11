@@ -4,7 +4,7 @@ library(vioplot)
 library(phytools)
 
 #read in data
-data = read.table("data_sept10.csv", header=T, sep=",")
+data = read.table("data_feb7.csv", header=T, sep=",")
 
 #update variables
 data$meanbd = apply(cbind(data$sp1_bodysize, data$sp2_bodysize), 1, mean)
