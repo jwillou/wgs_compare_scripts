@@ -20,7 +20,32 @@ for(r in 1:nrow(data)){
     }
   }
 }
-
+data$meanbd = apply(cbind(data$sp1_bodysize, data$sp2_bodysize), 1, mean)
+for(r in 1:nrow(data)){
+  if(is.na(data$meanbd[r])){
+    if(!is.na(data$sp1_bodysize[r])){
+      data$meanbd[r] = data$sp1_bodysize[r]
+      next
+    }
+    if(!is.na(data$sp2_bodysize[r])){
+      data$meanbd[r] = data$sp2_bodysize[r]
+      next
+    }
+  }
+}
+data$meangen = apply(cbind(data$sp1_gen_iucn, data$sp2_gen_iucn), 1, mean)
+for(r in 1:nrow(data)){
+  if(is.na(data$meangen[r])){
+    if(!is.na(data$sp1_gen_iucn[r])){
+      data$meangen[r] = data$sp1_gen_iucn[r]
+      next
+    }
+    if(!is.na(data$sp2_gen_iucn[r])){
+      data$meangen[r] = data$sp2_gen_iucn[r]
+      next
+    }
+  }
+}
 colors  = c("firebrick2", "dodgerblue2",     "goldenrod3") #
 classes = c("Mammalia",   "Actinopterygii",  "Aves") #  
 
@@ -79,6 +104,35 @@ plotcurve$y = (plotcurve$y)^2
 plotcurve = plotcurve[order(plotcurve$x),]
 lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
 points(x=t$meanc, y=(t$gen_K80)^2, col=alpha(colors[i], 0.6), pch=16, cex=1)
+
+
+
+i = 1
+t = data[data$class==classes[i],]
+t = t[t$gen_K80 < 0.08,]
+t = data.frame(gen_K80=sqrt(t$gen_K80), meangen=t$meangen, meanbd=sqrt(t$meanbd))
+t = t[complete.cases(t),]
+tlm = lm(gen_K80~meangen+meanbd, data=t)
+print(classes[i])
+print(summary(tlm))
+
+i = 1
+t = data[data$class==classes[i],]
+t = t[t$gen_K80 < 0.08,]
+t = data.frame(gen_K80=sqrt(t$gen_K80), meanbd=sqrt(t$meanbd))
+t = t[complete.cases(t),]
+tlm = lm(gen_K80~meanbd, data=t)
+print(classes[i])
+print(summary(tlm))
+
+i = 1
+t = data[data$class==classes[i],]
+t = t[t$gen_K80 < 0.08,]
+t = data.frame(gen_K80=sqrt(t$gen_K80), meangen=t$meangen)
+t = t[complete.cases(t),]
+tlm = lm(gen_K80~meangen, data=t)
+print(classes[i])
+print(summary(tlm))
 
 sink()
 dev.off()
