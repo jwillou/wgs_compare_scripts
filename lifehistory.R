@@ -4,7 +4,7 @@ library(vioplot)
 library(phytools)
 
 #read in data
-data = read.table("../data_sept10.csv", header=T, sep=",")
+data = read.table("../data_feb7.csv", header=T, sep=",")
 
 ####body size####
 sink(file="bodysize_genomic.txt")
@@ -55,6 +55,12 @@ plotcurve = plotcurve[order(plotcurve$x),]
 lines(plotcurve$x, plotcurve$y, lwd=3, col=alpha(colors[i], 1))
 points(x=(t$meanbd)^2, y=(t$gen_K80)^2, col=alpha(colors[i], 0.7), pch=16, cex=1)
 dev.off()
+
+pdf("bodysize_genomic_L_inset.pdf", height=5.25, width=5)
+par(bg=NA)
+plot(-100, -100, xlim=c(0, 1000), ylim=c(-0.01, 0.3),xlab=NA, ylab="nuclear divergence")
+points(x=(t$meanbd), y=(t$gen_K80), col=alpha(colors[i], 0.7), pch=16, cex=1)
+segments(x0=min(t$meanbd, na.rm=T), x1=2000, y0=(coefficients(tlm)[2]*min(t$meanbd, na.rm=T)+coefficients(tlm)[1]), y1=(coefficients(tlm)[2]*2000+coefficients(tlm)[1]), lwd=3, col=alpha(colors[i]))
 
 #mammal
 pdf("bodysize_genomic_mammal.pdf", height=5.25, width=5)
