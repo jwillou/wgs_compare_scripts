@@ -4,7 +4,7 @@ library(vioplot)
 library(phytools)
 
 #read in data
-data = read.table("../data_july02.csv", header=T, sep=",")####assembly size####
+data = read.table("../data_feb7.csv", header=T, sep=",")####assembly size####
 
 ####assembly quality####
 data$assembly = rep(0, nrow(data))
@@ -37,21 +37,25 @@ print("CC")
 hist(data$gen_K80[data$assembly=="CC"], breaks=seq(0,0.15, 0.01), xlim=c(0,0.15))
 print(mean(data$gen_K80[data$assembly=="CC"], na.rm=T))
 print(quantile(data$gen_K80[data$assembly=="CC"], probs=c(0.085, 0.915), na.rm=T))
+print(quantile(data$gen_K80[data$assembly=="CC"], probs=c(0.025, 0.975), na.rm=T))
 
 print("CS")
 hist(data$gen_K80[data$assembly=="CS"], breaks=seq(0,0.15, 0.01), xlim=c(0,0.15))
 print(mean(data$gen_K80[data$assembly=="CS"], na.rm=T))
 print(quantile(data$gen_K80[data$assembly=="CS"], probs=c(0.085, 0.915), na.rm=T))
+print(quantile(data$gen_K80[data$assembly=="CS"], probs=c(0.025, 0.975), na.rm=T))
 
 print("SS")
 hist(data$gen_K80[data$assembly=="SS"], breaks=seq(0,0.15, 0.01), xlim=c(0,0.15))
 print(mean(data$gen_K80[data$assembly=="SS"], na.rm=T))
 print(quantile(data$gen_K80[data$assembly=="SS"], probs=c(0.085, 0.915), na.rm=T))
+print(quantile(data$gen_K80[data$assembly=="SS"], probs=c(0.025, 0.975), na.rm=T))
 
 print("cS")
 hist(data$gen_K80[data$assembly=="cS"], breaks=seq(0,0.15, 0.01), xlim=c(0,0.15))
 print(mean(data$gen_K80[data$assembly=="cS"], na.rm=T))
 print(quantile(data$gen_K80[data$assembly=="cS"], probs=c(0.085, 0.915), na.rm=T))
+print(quantile(data$gen_K80[data$assembly=="cS"], probs=c(0.025, 0.975), na.rm=T))
 sink()
 
 ####number of chromosomes####

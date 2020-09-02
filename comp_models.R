@@ -126,7 +126,7 @@ for(c in classes){
   if(c=="Mammalia"){
     t$meanbd = t$meanbd/1000
   }
-  t = data.frame(y=sqrt(t$gen_K80), x=sqrt(t$meanbd))
+  t = data.frame(y=sqrt(t$gen_K80), x=log(t$meanbd))
   t = t[complete.cases(t),]
   tlm = lm(y~x, data=t)
   tmp = c(c, "bodysize", "raw", "nuc", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$coefficients[,4][2], summary(tlm)$fstatistic, summary(tlm)$r.squared)
@@ -139,7 +139,7 @@ for(c in classes){
   if(c=="Mammalia"){
     t$meanbd = t$meanbd/1000
   }
-  t = data.frame(y=sqrt(t$mtW_K80), x=sqrt(t$meanbd))
+  t = data.frame(y=sqrt(t$mtW_K80), x=log(t$meanbd))
   t = t[complete.cases(t),]
   tlm = lm(y~x, data=t)
   tmp = c(c, "bodysize", "raw", "mt", summary(tlm)$coefficients[1,1], summary(tlm)$coefficients[1,2], summary(tlm)$coefficients[2,1], summary(tlm)$coefficients[2,2], summary(tlm)$coefficients[,4][2], summary(tlm)$fstatistic, summary(tlm)$r.squared)

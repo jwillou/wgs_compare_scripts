@@ -96,7 +96,7 @@ for(c in Mcols){
   tt = t
   tt = tt[!is.na(tt[,Mcols]),,drop=F]
   points(x=(c6-sample(seq(j, 0.2, 0.01), nrow(tt), replace=T)), y=tt[,c], col=alpha("grey50", 0.7), pch=19, cex=0.75)
-  vioplot(x=tt[,c], col = alpha("grey50", 0.9), plotCentre = "line", side = "right", ylim=c(0,0.3), add=T, at=(c6+j))
+  vioplot(x=tt[,c], col = alpha("grey50", 0.5), plotCentre = "line", side = "right", ylim=c(0,0.3), add=T, at=(c6+j))
 }
 dev.off()
 
